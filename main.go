@@ -24,6 +24,7 @@ func main() {
 	api.HandleFunc("/task", routes.GetTask).Methods(http.MethodGet)
 	api.HandleFunc("/createTask", routes.CreateTask).Methods(http.MethodPost)
 	api.HandleFunc("/editTask", routes.EditTask).Methods(http.MethodPost)
+	api.HandleFunc("/editTaskStatus", routes.EditTaskStatus).Methods(http.MethodPost)
 	api.HandleFunc("/deleteTask", routes.DeleteTask).Methods(http.MethodDelete)
 
 	http.ListenAndServe(":8000", router)

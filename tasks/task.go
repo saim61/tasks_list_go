@@ -2,7 +2,6 @@ package tasks
 
 import (
 	"database/sql"
-	"fmt"
 	"tasks_list_go/db"
 )
 
@@ -25,7 +24,6 @@ func GetAllTasks(database *sql.DB) (string, []Task) {
 		var task Task
 		err := rows.Scan(&task.Id, &task.Title, &task.Description, &task.Status)
 		if err != nil {
-			fmt.Println("Error while scanning rows ---> ", err)
 			return err.Error(), nil
 		}
 		tasks = append(tasks, task)
@@ -56,7 +54,6 @@ func CreateTask(task Task, database *sql.DB) (string, bool) {
 	)
 
 	if err != nil {
-		fmt.Println("Error creating the task in the database. ", err.Error())
 		return err.Error(), false
 	}
 
@@ -73,7 +70,19 @@ func EditTask(taskParams Task, database *sql.DB) (string, bool) {
 		return "", true
 	}
 
-	fmt.Println("Task not found in DB with id ", taskParams.Id)
+	return errorString, false
+}
+
+func EditTaskStatus(taskParams Task, database *sql.DB) (string, bool) {
+	errorString, _, status := GetTask(taskParams.Id, database)
+	if status {
+		_, err := database.Exec(db.EDIT_TASK_STATUS_QUERY(), taskParams.Status, taskParams.Id)
+		if err != nil {
+			return err.Error(), false
+		}
+		return "", true
+	}
+
 	return errorString, false
 }
 
@@ -87,7 +96,6 @@ func DeleteTask(taskId int, database *sql.DB) (string, bool) {
 		)
 
 		if err != nil {
-			fmt.Println("Error deleting the task in the database. ", err.Error())
 			return err.Error(), false
 		}
 		return "", true

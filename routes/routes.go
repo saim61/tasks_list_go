@@ -150,6 +150,43 @@ func EditTask(w http.ResponseWriter, r *http.Request) {
 	w.Write(payload)
 }
 
+func EditTaskStatus(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	database := db.GetDatabaseObject()
+	defer database.Close()
+
+	var payload []byte
+	err := r.ParseForm()
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write(utils.CreatePayload(err.Error(), "Request body not parsed"))
+		return
+	}
+
+	// To ensure we have all the parameters required to edit the task status
+	if len(r.Form) != 2 {
+		w.WriteHeader(http.StatusForbidden)
+		payload = utils.CreatePayload("Missing parameters", "Failed to edit task status")
+	} else {
+		taskId, _ := strconv.Atoi(r.FormValue("taskId"))
+		task := tasks.Task{
+			Id:     taskId,
+			Status: r.FormValue("taskStatus"),
+		}
+
+		errorString, status := tasks.EditTaskStatus(task, database)
+		if status {
+			w.WriteHeader(http.StatusOK)
+			payload = utils.CreatePayload("", "Successfully edited task status")
+		} else {
+			w.WriteHeader(http.StatusForbidden)
+			payload = utils.CreatePayload(errorString, "Failed to edit task status")
+		}
+	}
+
+	w.Write(payload)
+}
+
 func DeleteTask(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	database := db.GetDatabaseObject()

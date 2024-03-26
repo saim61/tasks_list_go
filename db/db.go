@@ -17,6 +17,9 @@ func DELETE_TASK_QUERY() string   { return "DELETE FROM tasks WHERE id = ?" }
 func EDIT_TASK_QUERY() string {
 	return "UPDATE tasks SET title = ?, description = ?, status = ? WHERE id = ?"
 }
+func EDIT_TASK_STATUS_QUERY() string {
+	return "UPDATE tasks SET status = ? WHERE id = ?"
+}
 
 func getDSN() string {
 	// dbHost := os.Getenv(DB_HOST)
