@@ -2,7 +2,8 @@ package tasks
 
 import (
 	"database/sql"
-	"tasks_list_go/db"
+
+	"github.com/saim61/tasks_list_go/db"
 )
 
 type Task struct {
@@ -10,6 +11,15 @@ type Task struct {
 	Title       string `json:"title"`
 	Description string `json:"description"`
 	Status      string `json:"status"`
+}
+
+func NewTask() Task {
+	return Task{
+		Id:          -1,
+		Title:       "",
+		Description: "",
+		Status:      "",
+	}
 }
 
 func GetAllTasks(database *sql.DB) (string, []Task) {
