@@ -27,7 +27,7 @@ type EditTaskStatusRequest struct {
 func GetAllTasks(database *sql.DB) (string, []Task) {
 	rows, err := database.Query(db.GET_ALL_TASKS_QUERY())
 	if err != nil {
-		panic(err.Error())
+		panic("error code: 000x1" + err.Error())
 	}
 	defer rows.Close()
 
@@ -36,7 +36,7 @@ func GetAllTasks(database *sql.DB) (string, []Task) {
 		var task Task
 		err := rows.Scan(&task.Id, &task.Title, &task.Description, &task.Status)
 		if err != nil {
-			return err.Error(), nil
+			return "error code: 000x2" + err.Error(), nil
 		}
 		tasks = append(tasks, task)
 	}
@@ -50,7 +50,7 @@ func GetTask(taskId int, database *sql.DB) (string, Task, bool) {
 
 	err := row.Scan(&id, &title, &description, &status)
 	if err == sql.ErrNoRows {
-		return "No record found", Task{}, false
+		return "error code: 000x3: No record found", Task{}, false
 	} else {
 		task := Task{Id: id, Title: title, Description: description, Status: status}
 		return "", task, true
@@ -66,7 +66,7 @@ func CreateTask(task CreateTaskRequest, database *sql.DB) (string, bool) {
 	)
 
 	if err != nil {
-		return err.Error(), false
+		return "error code: 000x4" + err.Error(), false
 	}
 
 	return "", true
@@ -77,7 +77,7 @@ func EditTask(taskParams Task, database *sql.DB) (string, bool) {
 	if status {
 		_, err := database.Exec(db.EDIT_TASK_QUERY(), taskParams.Title, taskParams.Description, taskParams.Status, taskParams.Id)
 		if err != nil {
-			return err.Error(), false
+			return "error code: 000x5" + err.Error(), false
 		}
 		return "", true
 	}
@@ -90,7 +90,7 @@ func EditTaskStatus(taskParams EditTaskStatusRequest, database *sql.DB) (string,
 	if status {
 		_, err := database.Exec(db.EDIT_TASK_STATUS_QUERY(), taskParams.Status, taskParams.Id)
 		if err != nil {
-			return err.Error(), false
+			return "error code: 000x6" + err.Error(), false
 		}
 		return "", true
 	}
@@ -108,7 +108,7 @@ func DeleteTask(taskId int, database *sql.DB) (string, bool) {
 		)
 
 		if err != nil {
-			return err.Error(), false
+			return "error code: 000x7" + err.Error(), false
 		}
 		return "", true
 	}

@@ -45,7 +45,10 @@ func GetTask(g *gin.Context) {
 
 	theParams := g.Request.URL.Query()
 	id := theParams["id"]
-	idConverted, _ := strconv.Atoi(id[0])
+	idConverted, err := strconv.Atoi(id[0])
+	if err != nil {
+		g.JSON(http.StatusBadRequest, utils.NewErrorResponse("error code: 000x8"+err.Error(), "Failed to get task"))
+	}
 
 	errorString, task, status := tasks.GetTask(idConverted, database)
 	if status {
@@ -53,7 +56,6 @@ func GetTask(g *gin.Context) {
 	} else {
 		g.JSON(http.StatusBadRequest, utils.NewErrorResponse(errorString, "Failed to get task"))
 	}
-
 }
 
 // DeleteTask delete a specific task
@@ -70,7 +72,10 @@ func DeleteTask(g *gin.Context) {
 
 	theParams := g.Request.URL.Query()
 	id := theParams["id"]
-	idConverted, _ := strconv.Atoi(id[0])
+	idConverted, err := strconv.Atoi(id[0])
+	if err != nil {
+		g.JSON(http.StatusForbidden, utils.NewErrorResponse("error code: 000x9"+err.Error(), "Failed to delete task"))
+	}
 
 	errorString, status := tasks.DeleteTask(idConverted, database)
 	if status {
@@ -95,7 +100,7 @@ func CreateTask(g *gin.Context) {
 	var task tasks.CreateTaskRequest
 	err := g.ShouldBindJSON(&task)
 	if err != nil {
-		g.JSON(http.StatusBadRequest, utils.NewErrorResponse("Invalid parameters", "Request body not parsed"))
+		g.JSON(http.StatusBadRequest, utils.NewErrorResponse("error code: 000x10: Invalid parameters", "Request body not parsed"))
 		return
 	}
 
@@ -123,7 +128,7 @@ func EditTask(g *gin.Context) {
 	var task tasks.Task
 	err := g.ShouldBindJSON(&task)
 	if err != nil {
-		g.JSON(http.StatusBadRequest, utils.NewErrorResponse("Invalid parameters", "Request body not parsed"))
+		g.JSON(http.StatusBadRequest, utils.NewErrorResponse("error code: 000x11: Invalid parameters", "Request body not parsed"))
 		return
 	}
 
@@ -150,7 +155,7 @@ func EditTaskStatus(g *gin.Context) {
 	var task tasks.EditTaskStatusRequest
 	err := g.ShouldBindJSON(&task)
 	if err != nil {
-		g.JSON(http.StatusBadRequest, utils.NewErrorResponse("Invalid parameters", "Request body not parsed"))
+		g.JSON(http.StatusBadRequest, utils.NewErrorResponse("error code: 000x12: Invalid parameters", "Request body not parsed"))
 		return
 	}
 
