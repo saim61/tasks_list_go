@@ -7,7 +7,6 @@ import (
 	_ "github.com/saim61/tasks_list_go/docs"
 
 	"github.com/gin-contrib/cors"
-	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
@@ -19,19 +18,9 @@ import (
 // @BasePath /api/v1
 func main() {
 
-	router := gin.Default()
+	router := routes.SetupRouter()
 	router.Use(cors.Default())
-	v1 := router.Group("/api/v1")
-	{
-		v1.GET("/tasks", routes.TasksList)
-		v1.GET("/task/:id", routes.GetTask)
-
-		v1.POST("/createTask", routes.CreateTask)
-		v1.POST("/editTask", routes.EditTask)
-		v1.POST("/editTaskStatus", routes.EditTaskStatus)
-
-		v1.DELETE("/deleteTask/:id", routes.DeleteTask)
-	}
+	router = routes.SetupAPIRoutes(router)
 
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	router.Run(":8080")
