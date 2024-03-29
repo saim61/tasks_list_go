@@ -13,13 +13,15 @@ type Task struct {
 	Status      string `json:"status"`
 }
 
-func NewTask() Task {
-	return Task{
-		Id:          -1,
-		Title:       "",
-		Description: "",
-		Status:      "",
-	}
+type CreateTaskRequest struct {
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	Status      string `json:"status"`
+}
+
+type EditTaskStatusRequest struct {
+	Id     int    `json:"id"`
+	Status string `json:"status"`
 }
 
 func GetAllTasks(database *sql.DB) (string, []Task) {
@@ -55,7 +57,7 @@ func GetTask(taskId int, database *sql.DB) (string, Task, bool) {
 	}
 }
 
-func CreateTask(task Task, database *sql.DB) (string, bool) {
+func CreateTask(task CreateTaskRequest, database *sql.DB) (string, bool) {
 	_, err := database.Exec(
 		db.INSERT_TASK_QUERY(),
 		task.Title,
@@ -83,7 +85,7 @@ func EditTask(taskParams Task, database *sql.DB) (string, bool) {
 	return errorString, false
 }
 
-func EditTaskStatus(taskParams Task, database *sql.DB) (string, bool) {
+func EditTaskStatus(taskParams EditTaskStatusRequest, database *sql.DB) (string, bool) {
 	errorString, _, status := GetTask(taskParams.Id, database)
 	if status {
 		_, err := database.Exec(db.EDIT_TASK_STATUS_QUERY(), taskParams.Status, taskParams.Id)

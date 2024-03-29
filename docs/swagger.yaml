@@ -1,0 +1,175 @@
+basePath: /api/v1
+definitions:
+  tasks.CreateTaskRequest:
+    properties:
+      description:
+        type: string
+      status:
+        type: string
+      title:
+        type: string
+    type: object
+  tasks.EditTaskStatusRequest:
+    properties:
+      id:
+        type: integer
+      status:
+        type: string
+    type: object
+  tasks.Task:
+    properties:
+      description:
+        type: string
+      id:
+        type: integer
+      status:
+        type: string
+      title:
+        type: string
+    type: object
+  utils.ErrorResponse:
+    properties:
+      errorString:
+        type: string
+      message:
+        type: string
+    type: object
+  utils.SuccessResponse:
+    properties:
+      message:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: This is the documentation for your tasks list. It shows all the routes
+    and whatever you can do with this service.
+  title: Tasks List Go Documentation API
+  version: "1.0"
+paths:
+  /createTask:
+    post:
+      description: Create a task as per your liking
+      parameters:
+      - description: Required create task parameters
+        in: body
+        name: task
+        required: true
+        schema:
+          $ref: '#/definitions/tasks.CreateTaskRequest'
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/utils.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      summary: Create a task
+      tags:
+      - Tasks
+  /deleteTask/:id:
+    delete:
+      description: Delete your task by its id
+      parameters:
+      - description: Required task id
+        in: query
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      summary: Delete a task by its id
+      tags:
+      - Tasks
+  /editTask:
+    post:
+      description: Edit a task as per your liking. Add the task id and the other parameters
+      parameters:
+      - description: Required edit task parameters
+        in: body
+        name: task
+        required: true
+        schema:
+          $ref: '#/definitions/tasks.Task'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      summary: Edit a task
+      tags:
+      - Tasks
+  /editTaskStatus:
+    post:
+      description: Edit a task status
+      parameters:
+      - description: Required edit task status parameters
+        in: body
+        name: task
+        required: true
+        schema:
+          $ref: '#/definitions/tasks.EditTaskStatusRequest'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      summary: Edit a task status
+      tags:
+      - Tasks
+  /task/:id:
+    get:
+      description: Retreive your task by its id
+      parameters:
+      - description: Required task id
+        in: query
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/tasks.Task'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      summary: Get a task by its id
+      tags:
+      - Tasks
+  /tasks:
+    get:
+      description: Get and view all your tasks in this route.
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/tasks.Task'
+            type: array
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      summary: Get tasks list
+      tags:
+      - Tasks
+swagger: "2.0"

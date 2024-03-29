@@ -1,40 +1,22 @@
 package utils
 
-import (
-	"fmt"
-
-	"github.com/saim61/tasks_list_go/tasks"
-)
-
-func CreatePayload(errorString string, message string) []byte {
-	if errorString != "" {
-		return []byte(fmt.Sprintf(`{"message": %s, "error": %s}`, message, errorString))
-	}
-
-	return []byte(fmt.Sprintf(`{"message": %s}`, message))
+type ErrorResponse struct {
+	ErrorString string
+	Message     string
 }
 
-func CheckValidEditTaskRequest(task tasks.Task) bool {
-	if task.Id == -1 {
-		return false
-	} else if task.Title == "" || task.Description == "" || task.Status == "" {
-		return false
-	}
-	return true
+type SuccessResponse struct {
+	Message string
 }
 
-func CheckValidCreateRequest(task tasks.Task) bool {
-	if task.Title == "" || task.Description == "" || task.Status == "" {
-		return false
+func NewErrorResponse(errorString string, message string) ErrorResponse {
+	return ErrorResponse{
+		ErrorString: errorString, Message: message,
 	}
-	return true
 }
 
-func CheckValidEditTaskStatusRequest(task tasks.Task) bool {
-	if task.Id == -1 {
-		return false
-	} else if task.Status == "" {
-		return false
+func NewSuccessResponse(message string) SuccessResponse {
+	return SuccessResponse{
+		Message: message,
 	}
-	return true
 }

@@ -1,27 +1,38 @@
 package main
 
 import (
-	"fmt"
-	"net/http"
-
 	"github.com/saim61/tasks_list_go/routes"
 
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/gorilla/mux"
+	_ "github.com/saim61/tasks_list_go/docs"
+
+	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
+// @title Tasks List Go Documentation API
+// @version 1.0
+// @Description This is the documentation for your tasks list. It shows all the routes and whatever you can do with this service.
+// @host localhost:8080
+// @BasePath /api/v1
 func main() {
-	router := mux.NewRouter()
-	api := router.PathPrefix("/api/v1").Subrouter()
-	api.HandleFunc("", routes.Homepage)
-	api.HandleFunc("/", routes.Homepage)
-	api.HandleFunc("/tasks", routes.TasksList).Methods(http.MethodGet)
-	api.HandleFunc("/task", routes.GetTask).Methods(http.MethodGet)
-	api.HandleFunc("/createTask", routes.CreateTask).Methods(http.MethodPost)
-	api.HandleFunc("/editTask", routes.EditTask).Methods(http.MethodPost)
-	api.HandleFunc("/editTaskStatus", routes.EditTaskStatus).Methods(http.MethodPost)
-	api.HandleFunc("/deleteTask", routes.DeleteTask).Methods(http.MethodDelete)
 
-	fmt.Println("Starting server on port 8000")
-	http.ListenAndServe(":8000", router)
+	router := gin.Default()
+	router.Use(cors.Default())
+	v1 := router.Group("/api/v1")
+	{
+		v1.GET("/tasks", routes.TasksList)
+		v1.GET("/task/:id", routes.GetTask)
+
+		v1.POST("/createTask", routes.CreateTask)
+		v1.POST("/editTask", routes.EditTask)
+		v1.POST("/editTaskStatus", routes.EditTaskStatus)
+
+		v1.DELETE("/deleteTask/:id", routes.DeleteTask)
+	}
+
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	router.Run(":8080")
 }

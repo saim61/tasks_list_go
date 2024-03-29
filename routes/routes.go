@@ -1,177 +1,163 @@
 package routes
 
 import (
-	"encoding/json"
-	"io"
 	"net/http"
+	"strconv"
 
+	"github.com/gin-gonic/gin"
 	"github.com/saim61/tasks_list_go/tasks"
 	"github.com/saim61/tasks_list_go/utils"
 
 	"github.com/saim61/tasks_list_go/db"
 )
 
-func instructions(w http.ResponseWriter) {
-	io.WriteString(w, "*********************************************************\n")
-	io.WriteString(w, "Welcome to tasks list. You can do the following here.\n")
-	io.WriteString(w, "/tasks to view your tasks\n")
-	io.WriteString(w, "/createTask to create a task\n")
-	io.WriteString(w, "/editTask to edit a task\n")
-	io.WriteString(w, "/deleteTask to delete a task\n")
-	io.WriteString(w, "*********************************************************\n")
-}
-
-func Homepage(w http.ResponseWriter, r *http.Request) {
-	instructions(w)
-	w.WriteHeader(http.StatusCreated)
-}
-
-func TasksList(w http.ResponseWriter, r *http.Request) {
-	io.WriteString(w, "These are your tasks!\n")
-	w.Header().Set("Content-Type", "application/json")
+// TasksList godoc
+// @Summary Get tasks list
+// @description Get and view all your tasks in this route.
+// @Tags Tasks
+// @Success 200 {array} tasks.Task
+// @failure 403 {object} utils.ErrorResponse
+// @Router /tasks [get]
+func TasksList(g *gin.Context) {
 	database := db.GetDatabaseObject()
 	defer database.Close()
 
 	errorString, tasks := tasks.GetAllTasks(database)
 
 	if tasks != nil {
-		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(tasks)
+		g.JSON(http.StatusOK, tasks)
 	} else {
-		w.WriteHeader(http.StatusForbidden)
-		w.Write(utils.CreatePayload(errorString, "Failed to get tasksssssss"))
+		g.JSON(http.StatusForbidden, utils.NewErrorResponse(errorString, "Failed to get tasks"))
 	}
 }
 
-func GetTask(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
+// GetTask get a specific task
+// @Summary Get a task by its id
+// @Description Retreive your task by its id
+// @Tags Tasks
+// @Param id query int true "Required task id"
+// @Success 200 {object} tasks.Task
+// @Failure 400 {object} utils.ErrorResponse
+// @Router /task/:id [get]
+func GetTask(g *gin.Context) {
 	database := db.GetDatabaseObject()
 	defer database.Close()
 
-	t := tasks.NewTask()
-	err := json.NewDecoder(r.Body).Decode(&t)
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write(utils.CreatePayload("ID not provided in request", "Request body not parsed"))
-		return
-	}
+	theParams := g.Request.URL.Query()
+	id := theParams["id"]
+	idConverted, _ := strconv.Atoi(id[0])
 
-	var payload []byte
-
-	errorString, task, status := tasks.GetTask(t.Id, database)
+	errorString, task, status := tasks.GetTask(idConverted, database)
 	if status {
-		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(task)
+		g.JSON(http.StatusOK, task)
 	} else {
-		w.WriteHeader(http.StatusNotFound)
-		payload = utils.CreatePayload(errorString, "Failed to get task")
+		g.JSON(http.StatusBadRequest, utils.NewErrorResponse(errorString, "Failed to get task"))
 	}
 
-	w.Write(payload)
 }
 
-func CreateTask(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
+// DeleteTask delete a specific task
+// @Summary Delete a task by its id
+// @Description Delete your task by its id
+// @Tags Tasks
+// @Param id query int true "Required task id"
+// @Success 200 {object} utils.SuccessResponse
+// @Failure 400 {object} utils.ErrorResponse
+// @Router /deleteTask/:id [delete]
+func DeleteTask(g *gin.Context) {
 	database := db.GetDatabaseObject()
 	defer database.Close()
 
-	task := tasks.NewTask()
-	err := json.NewDecoder(r.Body).Decode(&task)
-	if err != nil || !utils.CheckValidCreateRequest(task) {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write(utils.CreatePayload("Invalid parameters", "Request body not parsed"))
+	theParams := g.Request.URL.Query()
+	id := theParams["id"]
+	idConverted, _ := strconv.Atoi(id[0])
+
+	errorString, status := tasks.DeleteTask(idConverted, database)
+	if status {
+		g.JSON(http.StatusOK, utils.NewSuccessResponse("Successfully deleted task"))
+	} else {
+		g.JSON(http.StatusForbidden, utils.NewErrorResponse(errorString, "Failed to delete task"))
+	}
+}
+
+// CreateTask create a task
+// @Summary Create a task
+// @Description Create a task as per your liking
+// @Tags Tasks
+// @Param task body tasks.CreateTaskRequest true "Required create task parameters"
+// @Success 201 {object} utils.SuccessResponse
+// @Failure 400 {object} utils.ErrorResponse
+// @Router /createTask [post]
+func CreateTask(g *gin.Context) {
+	database := db.GetDatabaseObject()
+	defer database.Close()
+
+	var task tasks.CreateTaskRequest
+	err := g.ShouldBindJSON(&task)
+	if err != nil {
+		g.JSON(http.StatusBadRequest, utils.NewErrorResponse("Invalid parameters", "Request body not parsed"))
 		return
 	}
 
-	var payload []byte
 	errorString, status := tasks.CreateTask(task, database)
 	if status {
-		w.WriteHeader(http.StatusCreated)
-		payload = utils.CreatePayload("", "Successfully created task")
+		g.JSON(http.StatusCreated, utils.NewSuccessResponse("Successfully created task"))
 	} else {
-		w.WriteHeader(http.StatusForbidden)
-		payload = utils.CreatePayload(errorString, "Failed to create task")
+		g.JSON(http.StatusBadRequest, utils.NewErrorResponse(errorString, "Failed to create task"))
 	}
 
-	w.Write(payload)
 }
 
-func EditTask(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
+// EditTask edit a task
+// @Summary Edit a task
+// @Description Edit a task as per your liking. Add the task id and the other parameters
+// @Tags Tasks
+// @Param task body tasks.Task true "Required edit task parameters"
+// @Success 200 {object} utils.SuccessResponse
+// @Failure 400 {object} utils.ErrorResponse
+// @Router /editTask [post]
+func EditTask(g *gin.Context) {
 	database := db.GetDatabaseObject()
 	defer database.Close()
 
-	var payload []byte
-	task := tasks.NewTask()
-
-	err := json.NewDecoder(r.Body).Decode(&task)
-	if err != nil || !utils.CheckValidEditTaskRequest(task) {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write(utils.CreatePayload("Invalid parameters", "Request body not parsed"))
+	var task tasks.Task
+	err := g.ShouldBindJSON(&task)
+	if err != nil {
+		g.JSON(http.StatusBadRequest, utils.NewErrorResponse("Invalid parameters", "Request body not parsed"))
 		return
 	}
 
 	errorString, status := tasks.EditTask(task, database)
 	if status {
-		w.WriteHeader(http.StatusOK)
-		payload = utils.CreatePayload("", "Successfully edited task")
+		g.JSON(http.StatusOK, utils.NewSuccessResponse("Successfully edited task"))
 	} else {
-		w.WriteHeader(http.StatusForbidden)
-		payload = utils.CreatePayload(errorString, "Failed to edit task")
+		g.JSON(http.StatusBadRequest, utils.NewErrorResponse(errorString, "Failed to edit task"))
 	}
-
-	w.Write(payload)
 }
 
-func EditTaskStatus(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
+// EditTaskStatus edit a task status
+// @Summary Edit a task status
+// @Description Edit a task status
+// @Tags Tasks
+// @Param task body tasks.EditTaskStatusRequest true "Required edit task status parameters"
+// @Success 200 {object} utils.SuccessResponse
+// @Failure 400 {object} utils.ErrorResponse
+// @Router /editTaskStatus [post]
+func EditTaskStatus(g *gin.Context) {
 	database := db.GetDatabaseObject()
 	defer database.Close()
 
-	var payload []byte
-	task := tasks.NewTask()
-
-	err := json.NewDecoder(r.Body).Decode(&task)
-	if err != nil || !utils.CheckValidEditTaskStatusRequest(task) {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write(utils.CreatePayload("Invalid parameters", "Request body not parsed"))
+	var task tasks.EditTaskStatusRequest
+	err := g.ShouldBindJSON(&task)
+	if err != nil {
+		g.JSON(http.StatusBadRequest, utils.NewErrorResponse("Invalid parameters", "Request body not parsed"))
 		return
 	}
 
 	errorString, status := tasks.EditTaskStatus(task, database)
 	if status {
-		w.WriteHeader(http.StatusOK)
-		payload = utils.CreatePayload("", "Successfully edited task status")
+		g.JSON(http.StatusOK, utils.NewSuccessResponse("Successfully edited task status"))
 	} else {
-		w.WriteHeader(http.StatusForbidden)
-		payload = utils.CreatePayload(errorString, "Failed to edit task status")
+		g.JSON(http.StatusBadRequest, utils.NewErrorResponse(errorString, "Failed to edit task status"))
 	}
-
-	w.Write(payload)
-}
-
-func DeleteTask(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	database := db.GetDatabaseObject()
-	defer database.Close()
-
-	t := tasks.NewTask()
-	err := json.NewDecoder(r.Body).Decode(&t)
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write(utils.CreatePayload("ID not provided in request", "Request body not parsed"))
-		return
-	}
-
-	var payload []byte
-	errorString, status := tasks.DeleteTask(t.Id, database)
-	if status {
-		w.WriteHeader(http.StatusOK)
-		payload = utils.CreatePayload("", "Successfully deleted task")
-	} else {
-		w.WriteHeader(http.StatusForbidden)
-		payload = utils.CreatePayload(errorString, "Failed to deleted task")
-	}
-
-	w.Write(payload)
 }
