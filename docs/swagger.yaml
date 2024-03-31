@@ -29,6 +29,8 @@ definitions:
     type: object
   utils.ErrorResponse:
     properties:
+      errorCode:
+        type: string
       errorString:
         type: string
       message:

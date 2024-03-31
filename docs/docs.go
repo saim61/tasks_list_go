@@ -254,6 +254,9 @@ const docTemplate = `{
         "utils.ErrorResponse": {
             "type": "object",
             "properties": {
+                "errorCode": {
+                    "type": "string"
+                },
                 "errorString": {
                     "type": "string"
                 },

@@ -4,18 +4,25 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/gin-gonic/gin"
+	"github.com/saim61/tasks_list_go/db"
 	"github.com/saim61/tasks_list_go/tasks"
 	"github.com/saim61/tasks_list_go/utils"
 
-	"github.com/saim61/tasks_list_go/db"
+	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 func SetupRouter() *gin.Engine {
-	return gin.Default()
+	router := gin.Default()
+	router.Use(cors.Default())
+
+	return router
 }
 
-func SetupAPIRoutes(router *gin.Engine) *gin.Engine {
+func SetupAPIRoutes() *gin.Engine {
+	router := SetupRouter()
 	v1 := router.Group("/api/v1")
 	{
 		v1.GET("/tasks", TasksList)
@@ -26,6 +33,23 @@ func SetupAPIRoutes(router *gin.Engine) *gin.Engine {
 		v1.POST("/editTaskStatus", EditTaskStatus)
 
 		v1.DELETE("/deleteTask/:id", DeleteTask)
+	}
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	return router
+}
+
+func SetupTestingRoutes() *gin.Engine {
+	router := SetupRouter()
+	testingRoutes := router.Group("/test")
+	{
+		testingRoutes.GET("/tasks", TasksList)
+		testingRoutes.GET("/task/:id", GetTask)
+
+		testingRoutes.POST("/createTask", CreateTask)
+		testingRoutes.POST("/editTask", EditTask)
+		testingRoutes.POST("/editTaskStatus", EditTaskStatus)
+
+		testingRoutes.DELETE("/deleteTask/:id", DeleteTask)
 	}
 	return router
 }
@@ -118,7 +142,7 @@ func CreateTask(g *gin.Context) {
 
 	var task tasks.CreateTaskRequest
 	err := g.ShouldBindJSON(&task)
-	if err != nil {
+	if !utils.IsValidCreateTask(task) || err != nil {
 		g.JSON(http.StatusBadRequest, utils.NewErrorResponse("000x10", "Invalid parameters", "Request body not parsed"))
 		return
 	}
@@ -146,7 +170,7 @@ func EditTask(g *gin.Context) {
 
 	var task tasks.Task
 	err := g.ShouldBindJSON(&task)
-	if err != nil {
+	if !utils.IsValidEditTask(task) || err != nil {
 		g.JSON(http.StatusBadRequest, utils.NewErrorResponse("000x11", "Invalid parameters", "Request body not parsed"))
 		return
 	}
@@ -173,7 +197,7 @@ func EditTaskStatus(g *gin.Context) {
 
 	var task tasks.EditTaskStatusRequest
 	err := g.ShouldBindJSON(&task)
-	if err != nil {
+	if !utils.IsValidEditTaskStatus(task) || err != nil {
 		g.JSON(http.StatusBadRequest, utils.NewErrorResponse("000x12", "Invalid parameters", "Request body not parsed"))
 		return
 	}

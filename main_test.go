@@ -13,10 +13,10 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var router *gin.Engine = routes.SetupRouter()
+var router *gin.Engine = routes.SetupTestingRoutes()
 
+// Passing scenario for get all tasks
 func TestGetAllTasks(t *testing.T) {
-	router.GET("/test/tasks", routes.TasksList)
 	req, _ := http.NewRequest("GET", "/test/tasks", nil)
 	w := httptest.NewRecorder()
 	router.ServeHTTP(w, req)
@@ -28,8 +28,8 @@ func TestGetAllTasks(t *testing.T) {
 	assert.NotEmpty(t, tasks)
 }
 
+// Passing scenario for create task
 func TestCreateTask(t *testing.T) {
-	router.POST("/test/createTask", routes.CreateTask)
 	task := tasks.CreateTaskRequest{
 		Title:       "Demo title",
 		Description: "Demo Description",
@@ -43,17 +43,17 @@ func TestCreateTask(t *testing.T) {
 	assert.Equal(t, http.StatusCreated, w.Code)
 }
 
+// Passing scenario for get task by id
 func TestGetTaskById(t *testing.T) {
-	router.GET("/test/task/:id", routes.GetTask)
-	req, _ := http.NewRequest("GET", "/test/task/:id?id=2", nil)
+	req, _ := http.NewRequest("GET", "/test/task/:id?id=1", nil)
 	w := httptest.NewRecorder()
 	router.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusOK, w.Code)
 }
 
+// Passing scenario for delete task
 func TestDeleteTask(t *testing.T) {
-	router.DELETE("/test/deleteTask/:id", routes.DeleteTask)
 	req, _ := http.NewRequest("DELETE", "/test/deleteTask/:id?id=5", nil)
 	w := httptest.NewRecorder()
 	router.ServeHTTP(w, req)
@@ -61,10 +61,10 @@ func TestDeleteTask(t *testing.T) {
 	assert.Equal(t, http.StatusOK, w.Code)
 }
 
+// Passing scenario for edit task
 func TestEditTask(t *testing.T) {
-	router.POST("/test/editTask", routes.EditTask)
 	task := tasks.Task{
-		Id:          2,
+		Id:          1,
 		Title:       "Edited title",
 		Description: "Edited Description",
 		Status:      "closed",
@@ -78,11 +78,11 @@ func TestEditTask(t *testing.T) {
 	assert.Equal(t, http.StatusOK, w.Code)
 }
 
+// Passing scenario for edit task status
 func TestEditTaskStatus(t *testing.T) {
-	router.POST("/test/editTaskStatus", routes.EditTaskStatus)
 	task := tasks.EditTaskStatusRequest{
-		Id:          2,
-		Status:      "anything",
+		Id:     2,
+		Status: "anything",
 	}
 
 	jsonEditTask, _ := json.Marshal(task)
@@ -91,4 +91,74 @@ func TestEditTaskStatus(t *testing.T) {
 	router.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusOK, w.Code)
+}
+
+// Fail scenario for create task
+// A task cannot have empty values
+func TestFailCreateTask(t *testing.T) {
+	task := tasks.CreateTaskRequest{
+		Title:       "",
+		Description: "",
+		Status:      "",
+	}
+	jsonTask, _ := json.Marshal(task)
+	req, _ := http.NewRequest("POST", "/test/createTask", bytes.NewBuffer(jsonTask))
+	w := httptest.NewRecorder()
+	router.ServeHTTP(w, req)
+
+	assert.Equal(t, http.StatusBadRequest, w.Code)
+}
+
+// Fail scenario for edit task
+// Id cannot be -1 or 0
+// Title, Description or Status cannot be empty
+func TestFailEditTask(t *testing.T) {
+	task := tasks.Task{
+		Id:          -1,
+		Title:       "",
+		Description: "",
+		Status:      "",
+	}
+
+	jsonEditTask, _ := json.Marshal(task)
+	req, _ := http.NewRequest("POST", "/test/editTask", bytes.NewBuffer(jsonEditTask))
+	w := httptest.NewRecorder()
+	router.ServeHTTP(w, req)
+
+	assert.Equal(t, http.StatusBadRequest, w.Code)
+}
+
+// Fail scenario for edit task status
+// Id cannot be -1 or 0
+// Status cannot be empty
+func TestFailEditTaskStatus(t *testing.T) {
+	task := tasks.EditTaskStatusRequest{
+		Id:     -1,
+		Status: "",
+	}
+
+	jsonEditTask, _ := json.Marshal(task)
+	req, _ := http.NewRequest("POST", "/test/editTaskStatus", bytes.NewBuffer(jsonEditTask))
+	w := httptest.NewRecorder()
+	router.ServeHTTP(w, req)
+
+	assert.Equal(t, http.StatusBadRequest, w.Code)
+}
+
+// Fail scenario for delete task
+// Should have an ID parameter in request with a valid ID
+func TestFailDeleteTask(t *testing.T) {
+	// Invalid ID request
+	req, _ := http.NewRequest("DELETE", "/test/deleteTask/:id?id=-1", nil)
+	w := httptest.NewRecorder()
+	router.ServeHTTP(w, req)
+
+	assert.Equal(t, http.StatusForbidden, w.Code)
+
+	// Task with this ID doesnt exist in DB
+	req, _ = http.NewRequest("DELETE", "/test/deleteTask/:id?id=99999999", nil)
+	w = httptest.NewRecorder()
+	router.ServeHTTP(w, req)
+
+	assert.Equal(t, http.StatusForbidden, w.Code)
 }
