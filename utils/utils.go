@@ -1,6 +1,10 @@
 package utils
 
-import "github.com/saim61/tasks_list_go/tasks"
+import (
+	"log"
+
+	"github.com/saim61/tasks_list_go/tasks"
+)
 
 type ErrorResponse struct {
 	ErrorCode   string
@@ -25,10 +29,7 @@ func NewSuccessResponse(message string) SuccessResponse {
 }
 
 func IsValidIdForTask(id int) bool {
-	if id > 0 {
-		return true
-	}
-	return false
+	return id > 0
 }
 
 func IsValidEditTask(task tasks.Task) bool {
@@ -58,4 +59,17 @@ func IsValidCreateTask(task tasks.CreateTaskRequest) bool {
 		return false
 	}
 	return true
+}
+
+func PrintTask(task tasks.Task) {
+	log.Println("Id: ", task.Id)
+	log.Println("Title: ", task.Id)
+	log.Println("Description: ", task.Id)
+	log.Println("Status: ", task.Id)
+}
+
+func PrintTasks(tasks []tasks.Task) {
+	for i := 0; i < len(tasks); i++ {
+		PrintTask(tasks[i])
+	}
 }
