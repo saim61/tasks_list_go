@@ -1,6 +1,7 @@
 package utils
 
 type ErrorResponse struct {
+	ErrorCode string
 	ErrorString string
 	Message     string
 }
@@ -9,9 +10,9 @@ type SuccessResponse struct {
 	Message string
 }
 
-func NewErrorResponse(errorString string, message string) ErrorResponse {
+func NewErrorResponse(errorCode string, errorString string, message string) ErrorResponse {
 	return ErrorResponse{
-		ErrorString: errorString, Message: message,
+		ErrorCode: errorCode, ErrorString: errorString, Message: message,
 	}
 }
 

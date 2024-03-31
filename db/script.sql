@@ -9,8 +9,10 @@ CREATE TABLE IF NOT EXISTS tasks_list_go.tasks (
     UNIQUE INDEX id_unique (id ASC) VISIBLE
 );
 
-INSERT INTO tasks_list_go.tasks (id, title, description, status) VALUES ('1', 'Task 1', 'This is a testing task', 'open');
-INSERT INTO tasks_list_go.tasks (id, title, description, status) VALUES ('2', 'Kitchen', 'Wash dishes', 'open');
-INSERT INTO tasks_list_go.tasks (id, title, description, status) VALUES ('3', 'Laundry', 'Wash and fold your clothes', 'open');
-
-
+INSERT INTO tasks_list_go.tasks (id, title, description, status) 
+VALUES 
+('1', 'Task 1', 'This is a testing task', 'open'), 
+('2', 'Kitchen', 'Wash dishes', 'open'), 
+('3', 'Laundry', 'Wash and fold your clothes', 'open'), 
+('4', 'Work', 'Write some code and rock the world!', 'open'), 
+('5', 'Chill', 'Play some Elden Ring!', 'open');

@@ -30,10 +30,6 @@ func SetupAPIRoutes(router *gin.Engine) *gin.Engine {
 	return router
 }
 
-func SetupTestingRoutes(router *gin.Engine) *gin.Engine {
-	return nil
-}
-
 // TasksList godoc
 // @Summary Get tasks list
 // @description Get and view all your tasks in this route.
@@ -45,12 +41,12 @@ func TasksList(g *gin.Context) {
 	database := db.GetDatabaseObject()
 	defer database.Close()
 
-	errorString, tasks := tasks.GetAllTasks(database)
+	errorCode, errorString, tasks := tasks.GetAllTasks(database)
 
 	if tasks != nil {
 		g.JSON(http.StatusOK, tasks)
 	} else {
-		g.JSON(http.StatusForbidden, utils.NewErrorResponse(errorString, "Failed to get tasks"))
+		g.JSON(http.StatusForbidden, utils.NewErrorResponse(errorCode, errorString, "Failed to get tasks"))
 	}
 }
 
@@ -70,14 +66,14 @@ func GetTask(g *gin.Context) {
 	id := theParams["id"]
 	idConverted, err := strconv.Atoi(id[0])
 	if err != nil {
-		g.JSON(http.StatusBadRequest, utils.NewErrorResponse("error code 000x8"+err.Error(), "Failed to get task"))
+		g.JSON(http.StatusBadRequest, utils.NewErrorResponse("000x8", err.Error(), "Failed to get task"))
 	}
 
-	errorString, task, status := tasks.GetTask(idConverted, database)
+	errorCode, errorString, task, status := tasks.GetTask(idConverted, database)
 	if status {
 		g.JSON(http.StatusOK, task)
 	} else {
-		g.JSON(http.StatusBadRequest, utils.NewErrorResponse(errorString, "Failed to get task"))
+		g.JSON(http.StatusBadRequest, utils.NewErrorResponse(errorCode, errorString, "Failed to get task"))
 	}
 }
 
@@ -97,14 +93,14 @@ func DeleteTask(g *gin.Context) {
 	id := theParams["id"]
 	idConverted, err := strconv.Atoi(id[0])
 	if err != nil {
-		g.JSON(http.StatusForbidden, utils.NewErrorResponse("error code 000x9"+err.Error(), "Failed to delete task"))
+		g.JSON(http.StatusForbidden, utils.NewErrorResponse("000x9", err.Error(), "Failed to delete task"))
 	}
 
-	errorString, status := tasks.DeleteTask(idConverted, database)
+	errorCode, errorString, status := tasks.DeleteTask(idConverted, database)
 	if status {
 		g.JSON(http.StatusOK, utils.NewSuccessResponse("Successfully deleted task"))
 	} else {
-		g.JSON(http.StatusForbidden, utils.NewErrorResponse(errorString, "Failed to delete task"))
+		g.JSON(http.StatusForbidden, utils.NewErrorResponse(errorCode, errorString, "Failed to delete task"))
 	}
 }
 
@@ -123,15 +119,15 @@ func CreateTask(g *gin.Context) {
 	var task tasks.CreateTaskRequest
 	err := g.ShouldBindJSON(&task)
 	if err != nil {
-		g.JSON(http.StatusBadRequest, utils.NewErrorResponse("error code 000x10: Invalid parameters", "Request body not parsed"))
+		g.JSON(http.StatusBadRequest, utils.NewErrorResponse("000x10", "Invalid parameters", "Request body not parsed"))
 		return
 	}
 
-	errorString, status := tasks.CreateTask(task, database)
+	errorCode, errorString, status := tasks.CreateTask(task, database)
 	if status {
 		g.JSON(http.StatusCreated, utils.NewSuccessResponse("Successfully created task"))
 	} else {
-		g.JSON(http.StatusBadRequest, utils.NewErrorResponse(errorString, "Failed to create task"))
+		g.JSON(http.StatusBadRequest, utils.NewErrorResponse(errorCode, errorString, "Failed to create task"))
 	}
 
 }
@@ -151,15 +147,15 @@ func EditTask(g *gin.Context) {
 	var task tasks.Task
 	err := g.ShouldBindJSON(&task)
 	if err != nil {
-		g.JSON(http.StatusBadRequest, utils.NewErrorResponse("error code 000x11: Invalid parameters", "Request body not parsed"))
+		g.JSON(http.StatusBadRequest, utils.NewErrorResponse("000x11", "Invalid parameters", "Request body not parsed"))
 		return
 	}
 
-	errorString, status := tasks.EditTask(task, database)
+	errorCode, errorString, status := tasks.EditTask(task, database)
 	if status {
 		g.JSON(http.StatusOK, utils.NewSuccessResponse("Successfully edited task"))
 	} else {
-		g.JSON(http.StatusBadRequest, utils.NewErrorResponse(errorString, "Failed to edit task"))
+		g.JSON(http.StatusBadRequest, utils.NewErrorResponse(errorCode, errorString, "Failed to edit task"))
 	}
 }
 
@@ -178,14 +174,14 @@ func EditTaskStatus(g *gin.Context) {
 	var task tasks.EditTaskStatusRequest
 	err := g.ShouldBindJSON(&task)
 	if err != nil {
-		g.JSON(http.StatusBadRequest, utils.NewErrorResponse("error code 000x12: Invalid parameters", "Request body not parsed"))
+		g.JSON(http.StatusBadRequest, utils.NewErrorResponse("000x12", "Invalid parameters", "Request body not parsed"))
 		return
 	}
 
-	errorString, status := tasks.EditTaskStatus(task, database)
+	errorCode, errorString, status := tasks.EditTaskStatus(task, database)
 	if status {
 		g.JSON(http.StatusOK, utils.NewSuccessResponse("Successfully edited task status"))
 	} else {
-		g.JSON(http.StatusBadRequest, utils.NewErrorResponse(errorString, "Failed to edit task status"))
+		g.JSON(http.StatusBadRequest, utils.NewErrorResponse(errorCode, errorString, "Failed to edit task status"))
 	}
 }
