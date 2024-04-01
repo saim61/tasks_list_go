@@ -9,7 +9,11 @@ const docTemplate = `{
     "info": {
         "description": "{{escape .Description}}",
         "title": "{{.Title}}",
-        "contact": {},
+        "contact": {
+            "name": "Saeem Mehmood",
+            "url": "https://github.com/saim61",
+            "email": "saimmahmood61@gmail.com"
+        },
         "version": "{{.Version}}"
     },
     "host": "{{.Host}}",

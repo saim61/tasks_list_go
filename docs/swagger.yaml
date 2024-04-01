@@ -43,7 +43,10 @@ definitions:
     type: object
 host: localhost:8080
 info:
-  contact: {}
+  contact:
+    email: saimmahmood61@gmail.com
+    name: Saeem Mehmood
+    url: https://github.com/saim61
   description: This is the documentation for your tasks list. It shows all the routes
     and whatever you can do with this service.
   title: Tasks List Go Documentation API

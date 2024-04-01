@@ -3,7 +3,11 @@
     "info": {
         "description": "This is the documentation for your tasks list. It shows all the routes and whatever you can do with this service.",
         "title": "Tasks List Go Documentation API",
-        "contact": {},
+        "contact": {
+            "name": "Saeem Mehmood",
+            "url": "https://github.com/saim61",
+            "email": "saimmahmood61@gmail.com"
+        },
         "version": "1.0"
     },
     "host": "localhost:8080",
