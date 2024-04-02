@@ -57,6 +57,8 @@ func RegisterUser(g *gin.Context) {
 // GetUser get an existing user
 // @Summary Get an existing user
 // @Description Fetch your details by using your email and password
+// @security bearerToken
+// @scheme bearer
 // @Tags User
 // @Param user body user.UserRequest true "Required user parameters"
 // @Success 200 {object} user.User

@@ -21,6 +21,11 @@ const docTemplate = `{
     "paths": {
         "/createTask": {
             "post": {
+                "security": [
+                    {
+                        "bearerToken": []
+                    }
+                ],
                 "description": "Create a task as per your liking",
                 "tags": [
                     "Tasks"
@@ -55,6 +60,11 @@ const docTemplate = `{
         },
         "/deleteTask/:id": {
             "delete": {
+                "security": [
+                    {
+                        "bearerToken": []
+                    }
+                ],
                 "description": "Delete your task by its id",
                 "tags": [
                     "Tasks"
@@ -87,6 +97,11 @@ const docTemplate = `{
         },
         "/editTask": {
             "patch": {
+                "security": [
+                    {
+                        "bearerToken": []
+                    }
+                ],
                 "description": "Edit a task as per your liking. Add the task id and the other parameters",
                 "tags": [
                     "Tasks"
@@ -121,6 +136,11 @@ const docTemplate = `{
         },
         "/editTaskStatus": {
             "patch": {
+                "security": [
+                    {
+                        "bearerToken": []
+                    }
+                ],
                 "description": "Edit a task status",
                 "tags": [
                     "Tasks"
@@ -223,6 +243,11 @@ const docTemplate = `{
         },
         "/task/:id": {
             "get": {
+                "security": [
+                    {
+                        "bearerToken": []
+                    }
+                ],
                 "description": "Retreive your task by its id",
                 "tags": [
                     "Tasks"
@@ -255,6 +280,11 @@ const docTemplate = `{
         },
         "/tasks": {
             "get": {
+                "security": [
+                    {
+                        "bearerToken": []
+                    }
+                ],
                 "description": "Get and view all your tasks in this route.",
                 "tags": [
                     "Tasks"
@@ -281,6 +311,11 @@ const docTemplate = `{
         },
         "/user": {
             "post": {
+                "security": [
+                    {
+                        "bearerToken": []
+                    }
+                ],
                 "description": "Fetch your details by using your email and password",
                 "tags": [
                     "User"
@@ -415,6 +450,13 @@ const docTemplate = `{
                 }
             }
         }
+    },
+    "securityDefinitions": {
+        "bearerToken": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
     }
 }`
 
@@ -425,7 +467,7 @@ var SwaggerInfo = &swag.Spec{
 	BasePath:         "/api/v1",
 	Schemes:          []string{},
 	Title:            "Tasks List Go Documentation API",
-	Description:      "This is the documentation for your tasks list. It shows all the routes and whatever you can do with this service.",
+	Description:      "This is the documentation for your tasks list. It shows all the routes and whatever you can do with this service. Once you create your account, login and click on Authorize button at the top and add your bearer toke. Be sure to add `Bearer` before your token otherwise requests would fail.",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 }

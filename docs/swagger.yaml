@@ -71,7 +71,9 @@ info:
     name: Saeem Mehmood
     url: https://github.com/saim61
   description: This is the documentation for your tasks list. It shows all the routes
-    and whatever you can do with this service.
+    and whatever you can do with this service. Once you create your account, login
+    and click on Authorize button at the top and add your bearer toke. Be sure to
+    add `Bearer` before your token otherwise requests would fail.
   title: Tasks List Go Documentation API
   version: "1.0"
 paths:
@@ -94,6 +96,8 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/utils.ErrorResponse'
+      security:
+      - bearerToken: []
       summary: Create a task
       tags:
       - Tasks
@@ -115,6 +119,8 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/utils.ErrorResponse'
+      security:
+      - bearerToken: []
       summary: Delete a task by its id
       tags:
       - Tasks
@@ -137,6 +143,8 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/utils.ErrorResponse'
+      security:
+      - bearerToken: []
       summary: Edit a task
       tags:
       - Tasks
@@ -159,6 +167,8 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/utils.ErrorResponse'
+      security:
+      - bearerToken: []
       summary: Edit a task status
       tags:
       - Tasks
@@ -224,6 +234,8 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/utils.ErrorResponse'
+      security:
+      - bearerToken: []
       summary: Get a task by its id
       tags:
       - Tasks
@@ -241,6 +253,8 @@ paths:
           description: Forbidden
           schema:
             $ref: '#/definitions/utils.ErrorResponse'
+      security:
+      - bearerToken: []
       summary: Get tasks list
       tags:
       - Tasks
@@ -263,7 +277,14 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/utils.ErrorResponse'
+      security:
+      - bearerToken: []
       summary: Get an existing user
       tags:
       - User
+securityDefinitions:
+  bearerToken:
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

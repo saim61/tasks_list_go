@@ -18,6 +18,8 @@ var successResponse utils.SuccessResponse
 // TasksList godoc
 // @Summary Get tasks list
 // @description Get and view all your tasks in this route.
+// @security bearerToken
+// @scheme bearer
 // @Tags Tasks
 // @Success 200 {array} tasks.Task
 // @failure 403 {object} utils.ErrorResponse
@@ -43,6 +45,8 @@ func TasksList(g *gin.Context) {
 // GetTask get a specific task
 // @Summary Get a task by its id
 // @Description Retreive your task by its id
+// @security bearerToken
+// @scheme bearer
 // @Tags Tasks
 // @Param id query int true "Required task id"
 // @Success 200 {object} tasks.Task
@@ -77,6 +81,8 @@ func GetTask(g *gin.Context) {
 // DeleteTask delete a specific task
 // @Summary Delete a task by its id
 // @Description Delete your task by its id
+// @security bearerToken
+// @scheme bearer
 // @Tags Tasks
 // @Param id query int true "Required task id"
 // @Success 200 {object} utils.SuccessResponse
@@ -111,6 +117,8 @@ func DeleteTask(g *gin.Context) {
 // CreateTask create a task
 // @Summary Create a task
 // @Description Create a task as per your liking
+// @security bearerToken
+// @scheme bearer
 // @Tags Tasks
 // @Param task body tasks.CreateTaskRequest true "Required create task parameters"
 // @Success 201 {object} utils.SuccessResponse
@@ -146,6 +154,8 @@ func CreateTask(g *gin.Context) {
 // EditTask edit a task
 // @Summary Edit a task
 // @Description Edit a task as per your liking. Add the task id and the other parameters
+// @security bearerToken
+// @scheme bearer
 // @Tags Tasks
 // @Param task body tasks.Task true "Required edit task parameters"
 // @Success 200 {object} utils.SuccessResponse
@@ -180,6 +190,8 @@ func EditTask(g *gin.Context) {
 // EditTaskStatus edit a task status
 // @Summary Edit a task status
 // @Description Edit a task status
+// @security bearerToken
+// @scheme bearer
 // @Tags Tasks
 // @Param task body tasks.EditTaskStatusRequest true "Required edit task status parameters"
 // @Success 200 {object} utils.SuccessResponse
