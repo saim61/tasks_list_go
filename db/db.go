@@ -21,6 +21,16 @@ func EDIT_TASK_STATUS_QUERY() string {
 	return "UPDATE tasks SET status = ? WHERE id = ?"
 }
 
+func INSERT_USER_QUERY() string {
+	return "INSERT into users (email, password) VALUES (?, ?)"
+}
+func GET_USER_QUERY() string {
+	return "SELECT * FROM users WHERE email = ?"
+}
+func EDIT_USER_QUERY() string {
+	return "UPDATE user SET email = ?, password = ?"
+}
+
 func getDSN() string {
 	// dbHost := os.Getenv(DB_HOST)
 	// dbPort := os.Getenv(DB_PORT)
