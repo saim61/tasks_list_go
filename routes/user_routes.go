@@ -3,6 +3,7 @@ package routes
 import (
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
@@ -13,6 +14,7 @@ import (
 )
 
 var jwtSecret = []byte("your_jwt_secret")
+var userArg user.UserRequest
 
 // RegisterUser create a new user
 // @Summary Register a new user
@@ -27,15 +29,22 @@ func RegisterUser(g *gin.Context) {
 	database := db.GetDatabaseObject()
 	defer database.Close()
 
-	var userArg user.UserRequest
 	if err := g.ShouldBindJSON(&userArg); err != nil {
 		g.JSON(400, gin.H{"error": "Invalid request payload"})
 		return
 	}
 
-	_, _, _, status := user.GetUser(userArg.Email, database)
+	userArg.Email = strings.ToLower(userArg.Email)
+	if !utils.IsValidEmail(userArg.Email) {
+		errorResponse = utils.NewErrorResponse("000x28", "Failed to create user", "Invalid email format")
+		log.Println(errorResponse)
+		g.JSON(http.StatusBadRequest, errorResponse)
+		return
+	}
+
+	_, _, _, status := user.GetUser(strings.ToLower(userArg.Email), database)
 	if status {
-		errorResponse = utils.NewErrorResponse("000x28", "Failed to create user", "User already exists")
+		errorResponse = utils.NewErrorResponse("000x29", "Failed to create user", "User already exists")
 		log.Println(errorResponse)
 		g.JSON(http.StatusBadRequest, errorResponse)
 		return
@@ -69,9 +78,16 @@ func GetUser(g *gin.Context) {
 	database := db.GetDatabaseObject()
 	defer database.Close()
 
-	var userArg user.UserRequest
 	if err := g.ShouldBindJSON(&userArg); err != nil {
 		errorResponse = utils.NewErrorResponse("000x24", "Invalid parameters", "Invalid request")
+		log.Println(errorResponse)
+		g.JSON(http.StatusBadRequest, errorResponse)
+		return
+	}
+
+	userArg.Email = strings.ToLower(userArg.Email)
+	if !utils.IsValidEmail(userArg.Email) {
+		errorResponse = utils.NewErrorResponse("000x30", "Failed to get user", "Invalid email format")
 		log.Println(errorResponse)
 		g.JSON(http.StatusBadRequest, errorResponse)
 		return
@@ -103,9 +119,16 @@ func LoginUser(g *gin.Context) {
 	database := db.GetDatabaseObject()
 	defer database.Close()
 
-	var userArg user.UserRequest
 	if err := g.ShouldBindJSON(&userArg); err != nil {
 		errorResponse = utils.NewErrorResponse("000x25", "Invalid parameters", "Invalid request")
+		log.Println(errorResponse)
+		g.JSON(http.StatusBadRequest, errorResponse)
+		return
+	}
+
+	userArg.Email = strings.ToLower(userArg.Email)
+	if !utils.IsValidEmail(userArg.Email) {
+		errorResponse = utils.NewErrorResponse("000x31", "Failed to login user", "Invalid email format")
 		log.Println(errorResponse)
 		g.JSON(http.StatusBadRequest, errorResponse)
 		return

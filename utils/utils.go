@@ -2,6 +2,7 @@ package utils
 
 import (
 	"log"
+	"net/mail"
 
 	"github.com/saim61/tasks_list_go/tasks"
 )
@@ -71,6 +72,11 @@ func IsValidCreateTask(task tasks.CreateTaskRequest) bool {
 		return false
 	}
 	return true
+}
+
+func IsValidEmail(email string) bool {
+	_, err := mail.ParseAddress(email)
+	return err == nil
 }
 
 func PrintTask(task tasks.Task) {
