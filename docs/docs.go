@@ -40,6 +40,13 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/tasks.CreateTaskRequest"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Insert your CSRF token. Access the GET /protected route to get it",
+                        "name": "X-CSRF-token",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -76,6 +83,13 @@ const docTemplate = `{
                         "description": "Required task id",
                         "name": "id",
                         "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Insert your CSRF token. Access the GET /protected route to get it",
+                        "name": "X-CSRF-token",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -116,6 +130,13 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/tasks.Task"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Insert your CSRF token. Access the GET /protected route to get it",
+                        "name": "X-CSRF-token",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -155,6 +176,13 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/tasks.EditTaskStatusRequest"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Insert your CSRF token. Access the GET /protected route to get it",
+                        "name": "X-CSRF-token",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -189,6 +217,13 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/user.UserRequest"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Insert your CSRF token. Access the GET /protected route to get it",
+                        "name": "X-CSRF-token",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -223,6 +258,13 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/user.UserRequest"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Insert your CSRF token. Access the GET /protected route to get it",
+                        "name": "X-CSRF-token",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -260,6 +302,13 @@ const docTemplate = `{
                         "name": "id",
                         "in": "query",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Insert your CSRF token. Access the GET /protected route to get it",
+                        "name": "X-CSRF-token",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -290,6 +339,15 @@ const docTemplate = `{
                     "Tasks"
                 ],
                 "summary": "Get tasks list",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Insert your CSRF token. Access the GET /protected route to get it",
+                        "name": "X-CSRF-token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -330,6 +388,13 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/user.UserRequest"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Insert your CSRF token. Access the GET /protected route to get it",
+                        "name": "X-CSRF-token",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {

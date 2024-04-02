@@ -34,6 +34,13 @@
                         "schema": {
                             "$ref": "#/definitions/tasks.CreateTaskRequest"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Insert your CSRF token. Access the GET /protected route to get it",
+                        "name": "X-CSRF-token",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -70,6 +77,13 @@
                         "description": "Required task id",
                         "name": "id",
                         "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Insert your CSRF token. Access the GET /protected route to get it",
+                        "name": "X-CSRF-token",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -110,6 +124,13 @@
                         "schema": {
                             "$ref": "#/definitions/tasks.Task"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Insert your CSRF token. Access the GET /protected route to get it",
+                        "name": "X-CSRF-token",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -149,6 +170,13 @@
                         "schema": {
                             "$ref": "#/definitions/tasks.EditTaskStatusRequest"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Insert your CSRF token. Access the GET /protected route to get it",
+                        "name": "X-CSRF-token",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -183,6 +211,13 @@
                         "schema": {
                             "$ref": "#/definitions/user.UserRequest"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Insert your CSRF token. Access the GET /protected route to get it",
+                        "name": "X-CSRF-token",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -217,6 +252,13 @@
                         "schema": {
                             "$ref": "#/definitions/user.UserRequest"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Insert your CSRF token. Access the GET /protected route to get it",
+                        "name": "X-CSRF-token",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -254,6 +296,13 @@
                         "name": "id",
                         "in": "query",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Insert your CSRF token. Access the GET /protected route to get it",
+                        "name": "X-CSRF-token",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -284,6 +333,15 @@
                     "Tasks"
                 ],
                 "summary": "Get tasks list",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Insert your CSRF token. Access the GET /protected route to get it",
+                        "name": "X-CSRF-token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -324,6 +382,13 @@
                         "schema": {
                             "$ref": "#/definitions/user.UserRequest"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Insert your CSRF token. Access the GET /protected route to get it",
+                        "name": "X-CSRF-token",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {

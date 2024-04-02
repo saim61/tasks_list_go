@@ -2,15 +2,36 @@ package routes
 
 import (
 	"github.com/gin-contrib/cors"
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
 	"github.com/saim61/tasks_list_go/auth"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
+	csrf "github.com/utrack/gin-csrf"
 )
 
 func SetupRouter() *gin.Engine {
 	router := gin.Default()
 	router.Use(cors.Default())
+
+	store := cookie.NewStore([]byte("QBQFKKTQ55JHBJ7X")) // TODO: get secret from env
+	router.Use(sessions.Sessions("mysession", store))
+	router.Use(csrf.Middleware(csrf.Options{
+		Secret: "secret123",
+		ErrorFunc: func(c *gin.Context) {
+			c.String(400, "CSRF token mismatch")
+			c.Abort()
+		},
+	}))
+
+	router.GET("/protected", func(c *gin.Context) {
+		c.String(200, csrf.GetToken(c))
+	})
+
+	router.POST("/protected", func(c *gin.Context) {
+		c.String(200, "CSRF token is valid")
+	})
 
 	return router
 }

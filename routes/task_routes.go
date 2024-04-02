@@ -21,6 +21,7 @@ var successResponse utils.SuccessResponse
 // @security bearerToken
 // @scheme bearer
 // @Tags Tasks
+// @Param X-CSRF-token header string true "Insert your CSRF token. Access the GET /protected route to get it"
 // @Success 200 {array} tasks.Task
 // @failure 403 {object} utils.ErrorResponse
 // @Router /tasks [get]
@@ -49,6 +50,7 @@ func TasksList(g *gin.Context) {
 // @scheme bearer
 // @Tags Tasks
 // @Param id query int true "Required task id"
+// @Param X-CSRF-token header string true "Insert your CSRF token. Access the GET /protected route to get it"
 // @Success 200 {object} tasks.Task
 // @Failure 400 {object} utils.ErrorResponse
 // @Router /task/:id [get]
@@ -85,6 +87,7 @@ func GetTask(g *gin.Context) {
 // @scheme bearer
 // @Tags Tasks
 // @Param id query int true "Required task id"
+// @Param X-CSRF-token header string true "Insert your CSRF token. Access the GET /protected route to get it"
 // @Success 200 {object} utils.SuccessResponse
 // @Failure 400 {object} utils.ErrorResponse
 // @Router /deleteTask/:id [delete]
@@ -121,6 +124,7 @@ func DeleteTask(g *gin.Context) {
 // @scheme bearer
 // @Tags Tasks
 // @Param task body tasks.CreateTaskRequest true "Required create task parameters"
+// @Param X-CSRF-token header string true "Insert your CSRF token. Access the GET /protected route to get it"
 // @Success 201 {object} utils.SuccessResponse
 // @Failure 400 {object} utils.ErrorResponse
 // @Router /createTask [post]
@@ -158,6 +162,7 @@ func CreateTask(g *gin.Context) {
 // @scheme bearer
 // @Tags Tasks
 // @Param task body tasks.Task true "Required edit task parameters"
+// @Param X-CSRF-token header string true "Insert your CSRF token. Access the GET /protected route to get it"
 // @Success 200 {object} utils.SuccessResponse
 // @Failure 400 {object} utils.ErrorResponse
 // @Router /editTask [patch]
@@ -194,6 +199,7 @@ func EditTask(g *gin.Context) {
 // @scheme bearer
 // @Tags Tasks
 // @Param task body tasks.EditTaskStatusRequest true "Required edit task status parameters"
+// @Param X-CSRF-token header string true "Insert your CSRF token. Access the GET /protected route to get it"
 // @Success 200 {object} utils.SuccessResponse
 // @Failure 400 {object} utils.ErrorResponse
 // @Router /editTaskStatus [patch]

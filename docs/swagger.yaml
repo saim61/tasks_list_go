@@ -87,6 +87,12 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/tasks.CreateTaskRequest'
+      - description: Insert your CSRF token. Access the GET /protected route to get
+          it
+        in: header
+        name: X-CSRF-token
+        required: true
+        type: string
       responses:
         "201":
           description: Created
@@ -110,6 +116,12 @@ paths:
         name: id
         required: true
         type: integer
+      - description: Insert your CSRF token. Access the GET /protected route to get
+          it
+        in: header
+        name: X-CSRF-token
+        required: true
+        type: string
       responses:
         "200":
           description: OK
@@ -134,6 +146,12 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/tasks.Task'
+      - description: Insert your CSRF token. Access the GET /protected route to get
+          it
+        in: header
+        name: X-CSRF-token
+        required: true
+        type: string
       responses:
         "200":
           description: OK
@@ -158,6 +176,12 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/tasks.EditTaskStatusRequest'
+      - description: Insert your CSRF token. Access the GET /protected route to get
+          it
+        in: header
+        name: X-CSRF-token
+        required: true
+        type: string
       responses:
         "200":
           description: OK
@@ -182,6 +206,12 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/user.UserRequest'
+      - description: Insert your CSRF token. Access the GET /protected route to get
+          it
+        in: header
+        name: X-CSRF-token
+        required: true
+        type: string
       responses:
         "200":
           description: OK
@@ -204,6 +234,12 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/user.UserRequest'
+      - description: Insert your CSRF token. Access the GET /protected route to get
+          it
+        in: header
+        name: X-CSRF-token
+        required: true
+        type: string
       responses:
         "200":
           description: OK
@@ -225,6 +261,12 @@ paths:
         name: id
         required: true
         type: integer
+      - description: Insert your CSRF token. Access the GET /protected route to get
+          it
+        in: header
+        name: X-CSRF-token
+        required: true
+        type: string
       responses:
         "200":
           description: OK
@@ -242,6 +284,13 @@ paths:
   /tasks:
     get:
       description: Get and view all your tasks in this route.
+      parameters:
+      - description: Insert your CSRF token. Access the GET /protected route to get
+          it
+        in: header
+        name: X-CSRF-token
+        required: true
+        type: string
       responses:
         "200":
           description: OK
@@ -268,6 +317,12 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/user.UserRequest'
+      - description: Insert your CSRF token. Access the GET /protected route to get
+          it
+        in: header
+        name: X-CSRF-token
+        required: true
+        type: string
       responses:
         "200":
           description: OK

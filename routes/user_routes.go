@@ -13,7 +13,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-var jwtSecret = []byte("your_jwt_secret")
+var jwtSecret = []byte("your_jwt_secret") // TODO: get jwt secret from env
 var userArg user.UserRequest
 
 // RegisterUser create a new user
@@ -21,6 +21,7 @@ var userArg user.UserRequest
 // @Description Register yourself using your email and password
 // @Tags User
 // @Param user body user.UserRequest true "Required user parameters"
+// @Param X-CSRF-token header string true "Insert your CSRF token. Access the GET /protected route to get it"
 // @Success 200 {object} utils.SuccessResponse
 // @Failure 400 {object} utils.ErrorResponse
 // @Router /register [post]
@@ -70,6 +71,7 @@ func RegisterUser(g *gin.Context) {
 // @scheme bearer
 // @Tags User
 // @Param user body user.UserRequest true "Required user parameters"
+// @Param X-CSRF-token header string true "Insert your CSRF token. Access the GET /protected route to get it"
 // @Success 200 {object} user.User
 // @Failure 400 {object} utils.ErrorResponse
 // @Router /user [post]
@@ -111,6 +113,7 @@ func GetUser(g *gin.Context) {
 // @Description Login by using your email and password and get your token
 // @Tags User
 // @Param user body user.UserRequest true "Required user parameters"
+// @Param X-CSRF-token header string true "Insert your CSRF token. Access the GET /protected route to get it"
 // @Success 200 {object} utils.LoginSuccessResponse
 // @Failure 400 {object} utils.ErrorResponse
 // @Router /login [post]
