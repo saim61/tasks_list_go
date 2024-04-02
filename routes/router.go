@@ -1,6 +1,8 @@
 package routes
 
 import (
+	"os"
+
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
@@ -15,7 +17,7 @@ func SetupRouter() *gin.Engine {
 	router := gin.Default()
 	router.Use(cors.Default())
 
-	store := cookie.NewStore([]byte("QBQFKKTQ55JHBJ7X")) // TODO: get secret from env
+	store := cookie.NewStore([]byte(os.Getenv("COOKIE_STORE")))
 	router.Use(sessions.Sessions("mysession", store))
 	router.Use(csrf.Middleware(csrf.Options{
 		Secret: "secret123",

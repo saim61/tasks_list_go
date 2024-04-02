@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 
+	"github.com/joho/godotenv"
 	"github.com/saim61/tasks_list_go/routes"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -24,6 +25,11 @@ import (
 // @Host localhost:8080
 // @BasePath /api/v1
 func main() {
+
+	err := godotenv.Load(".env")
+	if err != nil {
+		log.Fatalf("Error loading .env file: %s", err)
+	}
 
 	router := routes.SetupAPIRoutes()
 

@@ -3,6 +3,7 @@ package routes
 import (
 	"log"
 	"net/http"
+	"os"
 	"strings"
 
 	"github.com/dgrijalva/jwt-go"
@@ -13,7 +14,6 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-var jwtSecret = []byte("your_jwt_secret") // TODO: get jwt secret from env
 var userArg user.UserRequest
 
 // RegisterUser create a new user
@@ -159,6 +159,7 @@ func LoginUser(g *gin.Context) {
 		"password": user.Password,
 	})
 
+	jwtSecret := []byte(os.Getenv("JWT_SECRET"))
 	jwtToken, err := token.SignedString(jwtSecret)
 	if err != nil {
 		errorResponse = utils.NewErrorResponse("000x27", "Error while creating JWT token", "Internal server error")

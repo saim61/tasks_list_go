@@ -1,6 +1,9 @@
 package db
 
-import "database/sql"
+import (
+	"database/sql"
+	"os"
+)
 
 const DB_HOST = "localhost"
 const DB_PORT = "3306"
@@ -32,13 +35,13 @@ func EDIT_USER_QUERY() string {
 }
 
 func getDSN() string {
-	// dbHost := os.Getenv(DB_HOST)
-	// dbPort := os.Getenv(DB_PORT)
-	// dbUser := os.Getenv(DB_USER)
-	// dbPassword := os.Getenv(DB_PASSWORD)
-	// dbName := os.Getenv(DB_NAME)
+	dbUser := os.Getenv("DB_USER")
+	dbPassword := os.Getenv("DB_PASSWORD")
+	dbHost := os.Getenv("DB_HOST")
+	dbPort := os.Getenv("DB_PORT")
+	dbName := os.Getenv("DB_NAME")
 
-	return DB_USER + ":" + DB_PASSWORD + "@tcp(" + DB_HOST + ":" + DB_PORT + ")/" + DB_NAME
+	return dbUser + ":" + dbPassword + "@tcp(" + dbHost + ":" + dbPort + ")/" + dbName
 }
 
 func GetDatabaseObject() *sql.DB {
