@@ -27,6 +27,22 @@ definitions:
       title:
         type: string
     type: object
+  user.User:
+    properties:
+      email:
+        type: string
+      id:
+        type: integer
+      password:
+        type: string
+    type: object
+  user.UserRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
   utils.ErrorResponse:
     properties:
       errorCode:
@@ -34,6 +50,13 @@ definitions:
       errorString:
         type: string
       message:
+        type: string
+    type: object
+  utils.LoginSuccessResponse:
+    properties:
+      message:
+        type: string
+      token:
         type: string
     type: object
   utils.SuccessResponse:
@@ -96,7 +119,7 @@ paths:
       tags:
       - Tasks
   /editTask:
-    post:
+    patch:
       description: Edit a task as per your liking. Add the task id and the other parameters
       parameters:
       - description: Required edit task parameters
@@ -118,7 +141,7 @@ paths:
       tags:
       - Tasks
   /editTaskStatus:
-    post:
+    patch:
       description: Edit a task status
       parameters:
       - description: Required edit task status parameters
@@ -139,6 +162,50 @@ paths:
       summary: Edit a task status
       tags:
       - Tasks
+  /login:
+    post:
+      description: Login by using your email and password and get your token
+      parameters:
+      - description: Required user parameters
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/user.UserRequest'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.LoginSuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      summary: Login user
+      tags:
+      - User
+  /register:
+    post:
+      description: Register yourself using your email and password
+      parameters:
+      - description: Required user parameters
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/user.UserRequest'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      summary: Register a new user
+      tags:
+      - User
   /task/:id:
     get:
       description: Retreive your task by its id
@@ -177,4 +244,26 @@ paths:
       summary: Get tasks list
       tags:
       - Tasks
+  /user:
+    post:
+      description: Fetch your details by using your email and password
+      parameters:
+      - description: Required user parameters
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/user.UserRequest'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/user.User'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      summary: Get an existing user
+      tags:
+      - User
 swagger: "2.0"

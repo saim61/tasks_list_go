@@ -16,6 +16,11 @@ type SuccessResponse struct {
 	Message string
 }
 
+type LoginSuccessResponse struct {
+	Message string
+	Token   string
+}
+
 func NewErrorResponse(errorCode string, errorString string, message string) ErrorResponse {
 	return ErrorResponse{
 		ErrorCode: errorCode, ErrorString: errorString, Message: message,
@@ -25,6 +30,13 @@ func NewErrorResponse(errorCode string, errorString string, message string) Erro
 func NewSuccessResponse(message string) SuccessResponse {
 	return SuccessResponse{
 		Message: message,
+	}
+}
+
+func NewLoginSuccessResponse(message string, token string) LoginSuccessResponse {
+	return LoginSuccessResponse{
+		Message: message,
+		Token:   token,
 	}
 }
 

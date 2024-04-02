@@ -14,26 +14,34 @@ import (
 
 var jwtSecret = []byte("your_jwt_secret")
 
+// RegisterUser create a new user
+// @Summary Register a new user
+// @Description Register yourself using your email and password
+// @Tags User
+// @Param user body user.UserRequest true "Required user parameters"
+// @Success 200 {object} utils.SuccessResponse
+// @Failure 400 {object} utils.ErrorResponse
+// @Router /register [post]
 func RegisterUser(g *gin.Context) {
 	log.Println("Request to register user")
 	database := db.GetDatabaseObject()
 	defer database.Close()
 
-	var userArg user.RegisterUserRequest
+	var userArg user.UserRequest
 	if err := g.ShouldBindJSON(&userArg); err != nil {
 		g.JSON(400, gin.H{"error": "Invalid request payload"})
 		return
 	}
 
-	errorCode, errorString, _, status := user.GetUser(userArg.Email, database)
+	_, _, _, status := user.GetUser(userArg.Email, database)
 	if status {
-		errorResponse = utils.NewErrorResponse(errorCode, errorString, "User already exists")
+		errorResponse = utils.NewErrorResponse("000x28", "Failed to create user", "User already exists")
 		log.Println(errorResponse)
 		g.JSON(http.StatusBadRequest, errorResponse)
 		return
 	}
 
-	errorCode, errorString, status = user.RegisterUser(userArg, database)
+	errorCode, errorString, status := user.RegisterUser(userArg, database)
 	if !status {
 		errorResponse = utils.NewErrorResponse(errorCode, errorString, "Error while registering user")
 		log.Println(errorResponse)
@@ -46,12 +54,20 @@ func RegisterUser(g *gin.Context) {
 	g.JSON(http.StatusCreated, successResponse)
 }
 
+// GetUser get an existing user
+// @Summary Get an existing user
+// @Description Fetch your details by using your email and password
+// @Tags User
+// @Param user body user.UserRequest true "Required user parameters"
+// @Success 200 {object} user.User
+// @Failure 400 {object} utils.ErrorResponse
+// @Router /user [post]
 func GetUser(g *gin.Context) {
 	log.Println("Request to get user")
 	database := db.GetDatabaseObject()
 	defer database.Close()
 
-	var userArg user.User
+	var userArg user.UserRequest
 	if err := g.ShouldBindJSON(&userArg); err != nil {
 		errorResponse = utils.NewErrorResponse("000x24", "Invalid parameters", "Invalid request")
 		log.Println(errorResponse)
@@ -72,12 +88,20 @@ func GetUser(g *gin.Context) {
 	g.JSON(http.StatusOK, user)
 }
 
+// Login user
+// @Summary Login user
+// @Description Login by using your email and password and get your token
+// @Tags User
+// @Param user body user.UserRequest true "Required user parameters"
+// @Success 200 {object} utils.LoginSuccessResponse
+// @Failure 400 {object} utils.ErrorResponse
+// @Router /login [post]
 func LoginUser(g *gin.Context) {
 	log.Println("Request to login user")
 	database := db.GetDatabaseObject()
 	defer database.Close()
 
-	var userArg user.User
+	var userArg user.UserRequest
 	if err := g.ShouldBindJSON(&userArg); err != nil {
 		errorResponse = utils.NewErrorResponse("000x25", "Invalid parameters", "Invalid request")
 		log.Println(errorResponse)

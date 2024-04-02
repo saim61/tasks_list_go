@@ -19,7 +19,7 @@ func SetupAPIRoutes() *gin.Engine {
 	router := SetupRouter()
 	v1 := router.Group("/api/v1")
 	{
-		v1.GET("/user", GetUser)
+		v1.POST("/user", auth.AuthMiddleware(), GetUser)
 		v1.POST("/register", RegisterUser)
 		v1.POST("/login", LoginUser)
 

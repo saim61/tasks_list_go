@@ -13,13 +13,7 @@ type User struct {
 	Password string `json:"password"`
 }
 
-type EditUserRequest struct {
-	Id       int    `json:"id"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
-}
-
-type RegisterUserRequest struct {
+type UserRequest struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }
@@ -37,7 +31,7 @@ func GetUser(emailArg string, database *sql.DB) (string, string, User, bool) {
 	}
 }
 
-func RegisterUser(user RegisterUserRequest, database *sql.DB) (string, string, bool) {
+func RegisterUser(user UserRequest, database *sql.DB) (string, string, bool) {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return "000x21", err.Error(), false
@@ -56,10 +50,10 @@ func RegisterUser(user RegisterUserRequest, database *sql.DB) (string, string, b
 	return "", "", true
 }
 
-func EditUser(user EditUserRequest, database *sql.DB) (string, string, bool) {
-	errorCode, errorString, _, status := GetUser(user.Email, database)
+func EditUser(user UserRequest, database *sql.DB) (string, string, bool) {
+	errorCode, errorString, userDB, status := GetUser(user.Email, database)
 	if status {
-		_, err := database.Exec(db.EDIT_USER_QUERY(), user.Id, user.Email, user.Password)
+		_, err := database.Exec(db.EDIT_USER_QUERY(), userDB.Id, user.Email, user.Password)
 		if err != nil {
 			return "000x23", err.Error(), false
 		}
