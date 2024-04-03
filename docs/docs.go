@@ -334,11 +334,11 @@ const docTemplate = `{
                         "bearerToken": []
                     }
                 ],
-                "description": "Get and view all your tasks in this route.",
+                "description": "Get and view all the tasks by all users in this route.",
                 "tags": [
                     "Tasks"
                 ],
-                "summary": "Get tasks list",
+                "summary": "Get tasks list of all users",
                 "parameters": [
                     {
                         "type": "string",
@@ -412,6 +412,46 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/user_tasks": {
+            "get": {
+                "security": [
+                    {
+                        "bearerToken": []
+                    }
+                ],
+                "description": "Get and view all the tasks created by you.",
+                "tags": [
+                    "Tasks"
+                ],
+                "summary": "Get tasks list of current user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Insert your CSRF token. Access the GET /protected route to get it",
+                        "name": "X-CSRF-token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/tasks.Task"
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -454,6 +494,9 @@ const docTemplate = `{
                 },
                 "title": {
                     "type": "string"
+                },
+                "user_id": {
+                    "type": "integer"
                 }
             }
         },

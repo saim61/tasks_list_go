@@ -12,16 +12,17 @@ const DB_USER = "root"
 const DB_NAME = "tasks_list_go"
 
 func INSERT_TASK_QUERY() string {
-	return "INSERT into tasks (title, description, status) VALUES (?, ?, ?)"
+	return "INSERT into tasks (title, description, status, user_id) VALUES (?, ?, ?, ?)"
 }
-func GET_ALL_TASKS_QUERY() string { return "SELECT * FROM tasks" }
-func GET_TASK_QUERY() string      { return "SELECT * FROM tasks WHERE id = ?" }
-func DELETE_TASK_QUERY() string   { return "DELETE FROM tasks WHERE id = ?" }
+func GET_ALL_TASKS_QUERY() string      { return "SELECT * FROM tasks" }
+func GET_ALL_USER_TASKS_QUERY() string { return "SELECT * FROM tasks WHERE user_id = ?" }
+func GET_TASK_QUERY() string           { return "SELECT * FROM tasks WHERE id = ? AND user_id = ?" }
+func DELETE_TASK_QUERY() string        { return "DELETE FROM tasks WHERE id = ?" }
 func EDIT_TASK_QUERY() string {
-	return "UPDATE tasks SET title = ?, description = ?, status = ? WHERE id = ?"
+	return "UPDATE tasks SET title = ?, description = ?, status = ? WHERE id = ? AND user_id = ?"
 }
 func EDIT_TASK_STATUS_QUERY() string {
-	return "UPDATE tasks SET status = ? WHERE id = ?"
+	return "UPDATE tasks SET status = ? WHERE id = ? AND user_id = ?"
 }
 
 func INSERT_USER_QUERY() string {

@@ -11,6 +11,7 @@ type Task struct {
 	Title       string `json:"title"`
 	Description string `json:"description"`
 	Status      string `json:"status"`
+	UserId      int    `json:"user_id"`
 }
 
 type CreateTaskRequest struct {
@@ -34,7 +35,7 @@ func GetAllTasks(database *sql.DB) (string, string, []Task) {
 	var tasks []Task
 	for rows.Next() {
 		var task Task
-		err := rows.Scan(&task.Id, &task.Title, &task.Description, &task.Status)
+		err := rows.Scan(&task.Id, &task.Title, &task.Description, &task.Status, &task.UserId)
 		if err != nil {
 			return "000x2", err.Error(), nil
 		}
@@ -44,40 +45,61 @@ func GetAllTasks(database *sql.DB) (string, string, []Task) {
 	return "", "", tasks
 }
 
-func GetTask(taskId int, database *sql.DB) (string, string, Task, bool) {
-	id, title, description, status := -1, "", "", ""
-	row := database.QueryRow(db.GET_TASK_QUERY(), taskId)
+func GetAllUserTasks(userId int, database *sql.DB) (string, string, []Task) {
+	rows, err := database.Query(db.GET_ALL_USER_TASKS_QUERY(), userId)
+	if err != nil {
+		panic("000x3: " + err.Error())
+	}
+	defer rows.Close()
 
-	err := row.Scan(&id, &title, &description, &status)
+	var tasks []Task
+	for rows.Next() {
+		var task Task
+		err := rows.Scan(&task.Id, &task.Title, &task.Description, &task.Status, &task.UserId)
+		if err != nil {
+			return "000x4", err.Error(), nil
+		}
+		tasks = append(tasks, task)
+	}
+
+	return "", "", tasks
+}
+
+func GetTask(taskId int, userIdArg int, database *sql.DB) (string, string, Task, bool) {
+	id, title, description, status, userId := -1, "", "", "", -1
+	row := database.QueryRow(db.GET_TASK_QUERY(), taskId, userIdArg)
+
+	err := row.Scan(&id, &title, &description, &status, &userId)
 	if err == sql.ErrNoRows {
-		return "000x3", "No record found", Task{}, false
+		return "000x5", "No record found", Task{}, false
 	} else {
 		task := Task{Id: id, Title: title, Description: description, Status: status}
 		return "", "", task, true
 	}
 }
 
-func CreateTask(task CreateTaskRequest, database *sql.DB) (string, string, bool) {
+func CreateTask(task CreateTaskRequest, userId int, database *sql.DB) (string, string, bool) {
 	_, err := database.Exec(
 		db.INSERT_TASK_QUERY(),
 		task.Title,
 		task.Description,
 		task.Status,
+		userId,
 	)
 
 	if err != nil {
-		return "000x4", err.Error(), false
+		return "000x6", err.Error(), false
 	}
 
 	return "", "", true
 }
 
-func EditTask(taskParams Task, database *sql.DB) (string, string, bool) {
-	errorCode, errorString, _, status := GetTask(taskParams.Id, database)
+func EditTask(taskParams Task, userIdArg int, database *sql.DB) (string, string, bool) {
+	errorCode, errorString, _, status := GetTask(taskParams.Id, userIdArg, database)
 	if status {
-		_, err := database.Exec(db.EDIT_TASK_QUERY(), taskParams.Title, taskParams.Description, taskParams.Status, taskParams.Id)
+		_, err := database.Exec(db.EDIT_TASK_QUERY(), taskParams.Title, taskParams.Description, taskParams.Status, taskParams.Id, userIdArg)
 		if err != nil {
-			return "000x5", err.Error(), false
+			return "000x7", err.Error(), false
 		}
 		return "", "", true
 	}
@@ -85,12 +107,12 @@ func EditTask(taskParams Task, database *sql.DB) (string, string, bool) {
 	return errorCode, errorString, false
 }
 
-func EditTaskStatus(taskParams EditTaskStatusRequest, database *sql.DB) (string, string, bool) {
-	errorCode, errorString, _, status := GetTask(taskParams.Id, database)
+func EditTaskStatus(taskParams EditTaskStatusRequest, userIdArg int, database *sql.DB) (string, string, bool) {
+	errorCode, errorString, _, status := GetTask(taskParams.Id, userIdArg, database)
 	if status {
-		_, err := database.Exec(db.EDIT_TASK_STATUS_QUERY(), taskParams.Status, taskParams.Id)
+		_, err := database.Exec(db.EDIT_TASK_STATUS_QUERY(), taskParams.Status, taskParams.Id, userIdArg)
 		if err != nil {
-			return "000x6", err.Error(), false
+			return "000x8", err.Error(), false
 		}
 		return "", "", true
 	}
@@ -98,8 +120,8 @@ func EditTaskStatus(taskParams EditTaskStatusRequest, database *sql.DB) (string,
 	return errorCode, errorString, false
 }
 
-func DeleteTask(taskId int, database *sql.DB) (string, string, bool) {
-	errorCode, errorString, _, status := GetTask(taskId, database)
+func DeleteTask(taskId int, userIdArg int, database *sql.DB) (string, string, bool) {
+	errorCode, errorString, _, status := GetTask(taskId, userIdArg, database)
 
 	if status {
 		_, err := database.Exec(
@@ -108,7 +130,7 @@ func DeleteTask(taskId int, database *sql.DB) (string, string, bool) {
 		)
 
 		if err != nil {
-			return "000x7", err.Error(), false
+			return "000x9", err.Error(), false
 		}
 		return "", "", true
 	}

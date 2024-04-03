@@ -1,9 +1,13 @@
 package utils
 
 import (
+	"fmt"
 	"log"
 	"net/mail"
+	"os"
+	"strings"
 
+	jwt "github.com/golang-jwt/jwt/v5"
 	"github.com/saim61/tasks_list_go/tasks"
 )
 
@@ -77,6 +81,24 @@ func IsValidCreateTask(task tasks.CreateTaskRequest) bool {
 func IsValidEmail(email string) bool {
 	_, err := mail.ParseAddress(email)
 	return err == nil
+}
+
+func GetJWKTokenFromJWT(authParts []string) (*jwt.Token, error) {
+	var jwtSecret = []byte(os.Getenv("JWT_SECRET"))
+	token, err := jwt.Parse(authParts[1], func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+		return jwtSecret, nil
+	})
+	return token, err
+}
+
+func GetUserEmailFromJWT(authHeader string) string {
+	authParts := strings.Split(authHeader, " ")
+	token, _ := GetJWKTokenFromJWT(authParts)
+
+	return token.Claims.(jwt.MapClaims)["Email"].(string)
 }
 
 func PrintTask(task tasks.Task) {

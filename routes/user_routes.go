@@ -156,10 +156,12 @@ func LoginUser(g *gin.Context) {
 
 	mySigningKey := []byte(os.Getenv("JWT_SECRET"))
 	type MyCustomClaims struct {
+		Email string
 		jwt.RegisteredClaims
 	}
 
 	claims := MyCustomClaims{
+		user.Email,
 		jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(1 * time.Hour)),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),

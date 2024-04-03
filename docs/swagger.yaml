@@ -26,6 +26,8 @@ definitions:
         type: string
       title:
         type: string
+      user_id:
+        type: integer
     type: object
   user.User:
     properties:
@@ -283,7 +285,7 @@ paths:
       - Tasks
   /tasks:
     get:
-      description: Get and view all your tasks in this route.
+      description: Get and view all the tasks by all users in this route.
       parameters:
       - description: Insert your CSRF token. Access the GET /protected route to get
           it
@@ -304,7 +306,7 @@ paths:
             $ref: '#/definitions/utils.ErrorResponse'
       security:
       - bearerToken: []
-      summary: Get tasks list
+      summary: Get tasks list of all users
       tags:
       - Tasks
   /user:
@@ -337,6 +339,32 @@ paths:
       summary: Get an existing user
       tags:
       - User
+  /user_tasks:
+    get:
+      description: Get and view all the tasks created by you.
+      parameters:
+      - description: Insert your CSRF token. Access the GET /protected route to get
+          it
+        in: header
+        name: X-CSRF-token
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/tasks.Task'
+            type: array
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      security:
+      - bearerToken: []
+      summary: Get tasks list of current user
+      tags:
+      - Tasks
 securityDefinitions:
   bearerToken:
     in: header

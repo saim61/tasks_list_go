@@ -7,6 +7,7 @@ import (
 
 	"github.com/saim61/tasks_list_go/db"
 	"github.com/saim61/tasks_list_go/tasks"
+	userPkg "github.com/saim61/tasks_list_go/user"
 	"github.com/saim61/tasks_list_go/utils"
 
 	"github.com/gin-gonic/gin"
@@ -16,8 +17,8 @@ var errorResponse utils.ErrorResponse
 var successResponse utils.SuccessResponse
 
 // TasksList godoc
-// @Summary Get tasks list
-// @description Get and view all your tasks in this route.
+// @Summary Get tasks list of all users
+// @description Get and view all the tasks by all users in this route.
 // @security bearerToken
 // @scheme bearer
 // @Tags Tasks
@@ -31,6 +32,37 @@ func TasksList(g *gin.Context) {
 	defer database.Close()
 
 	errorCode, errorString, tasks := tasks.GetAllTasks(database)
+
+	if tasks != nil {
+		log.Println(utils.NewSuccessResponse("Successfully fetched tasks"))
+		utils.PrintTasks(tasks)
+		g.JSON(http.StatusOK, tasks)
+	} else {
+		errorResponse = utils.NewErrorResponse(errorCode, errorString, "Failed to get tasks")
+		log.Println(errorResponse)
+		g.JSON(http.StatusForbidden, errorResponse)
+	}
+}
+
+// TasksList godoc
+// @Summary Get tasks list of current user
+// @description Get and view all the tasks created by you.
+// @security bearerToken
+// @scheme bearer
+// @Tags Tasks
+// @Param X-CSRF-token header string true "Insert your CSRF token. Access the GET /protected route to get it"
+// @Success 200 {array} tasks.Task
+// @failure 403 {object} utils.ErrorResponse
+// @Router /user_tasks [get]
+func UserTasksList(g *gin.Context) {
+	log.Println("Request to get Tasks List of current user")
+	database := db.GetDatabaseObject()
+	defer database.Close()
+
+	userEmail := utils.GetUserEmailFromJWT(g.GetHeader("Authorization"))
+	_, _, user, _ := userPkg.GetUser(userEmail, database)
+
+	errorCode, errorString, tasks := tasks.GetAllUserTasks(user.Id, database)
 
 	if tasks != nil {
 		log.Println(utils.NewSuccessResponse("Successfully fetched tasks"))
@@ -59,6 +91,9 @@ func GetTask(g *gin.Context) {
 	database := db.GetDatabaseObject()
 	defer database.Close()
 
+	userEmail := utils.GetUserEmailFromJWT(g.GetHeader("Authorization"))
+	_, _, user, _ := userPkg.GetUser(userEmail, database)
+
 	theParams := g.Request.URL.Query()
 	id := theParams["id"]
 	idConverted, err := strconv.Atoi(id[0])
@@ -68,7 +103,7 @@ func GetTask(g *gin.Context) {
 		g.JSON(http.StatusBadRequest, errorResponse)
 	}
 
-	errorCode, errorString, task, status := tasks.GetTask(idConverted, database)
+	errorCode, errorString, task, status := tasks.GetTask(idConverted, user.Id, database)
 	if status {
 		log.Println(utils.NewSuccessResponse("Successfully fetched task"))
 		utils.PrintTask(task)
@@ -96,6 +131,9 @@ func DeleteTask(g *gin.Context) {
 	database := db.GetDatabaseObject()
 	defer database.Close()
 
+	userEmail := utils.GetUserEmailFromJWT(g.GetHeader("Authorization"))
+	_, _, user, _ := userPkg.GetUser(userEmail, database)
+
 	theParams := g.Request.URL.Query()
 	id := theParams["id"]
 	idConverted, err := strconv.Atoi(id[0])
@@ -105,7 +143,7 @@ func DeleteTask(g *gin.Context) {
 		g.JSON(http.StatusForbidden, errorResponse)
 	}
 
-	errorCode, errorString, status := tasks.DeleteTask(idConverted, database)
+	errorCode, errorString, status := tasks.DeleteTask(idConverted, user.Id, database)
 	if status {
 		successResponse = utils.NewSuccessResponse("Successfully deleted task # " + id[0])
 		log.Println(successResponse)
@@ -133,6 +171,9 @@ func CreateTask(g *gin.Context) {
 	database := db.GetDatabaseObject()
 	defer database.Close()
 
+	userEmail := utils.GetUserEmailFromJWT(g.GetHeader("Authorization"))
+	_, _, user, _ := userPkg.GetUser(userEmail, database)
+
 	var task tasks.CreateTaskRequest
 	err := g.ShouldBindJSON(&task)
 	if !utils.IsValidCreateTask(task) || err != nil {
@@ -142,7 +183,7 @@ func CreateTask(g *gin.Context) {
 		return
 	}
 
-	errorCode, errorString, status := tasks.CreateTask(task, database)
+	errorCode, errorString, status := tasks.CreateTask(task, user.Id, database)
 	if status {
 		successResponse = utils.NewSuccessResponse("Successfully created task")
 		log.Println(successResponse)
@@ -171,6 +212,9 @@ func EditTask(g *gin.Context) {
 	database := db.GetDatabaseObject()
 	defer database.Close()
 
+	userEmail := utils.GetUserEmailFromJWT(g.GetHeader("Authorization"))
+	_, _, user, _ := userPkg.GetUser(userEmail, database)
+
 	var task tasks.Task
 	err := g.ShouldBindJSON(&task)
 	if !utils.IsValidEditTask(task) || err != nil {
@@ -180,7 +224,7 @@ func EditTask(g *gin.Context) {
 		return
 	}
 
-	errorCode, errorString, status := tasks.EditTask(task, database)
+	errorCode, errorString, status := tasks.EditTask(task, user.Id, database)
 	if status {
 		successResponse = utils.NewSuccessResponse("Successfully edited task")
 		log.Println(successResponse)
@@ -208,6 +252,9 @@ func EditTaskStatus(g *gin.Context) {
 	database := db.GetDatabaseObject()
 	defer database.Close()
 
+	userEmail := utils.GetUserEmailFromJWT(g.GetHeader("Authorization"))
+	_, _, user, _ := userPkg.GetUser(userEmail, database)
+
 	var task tasks.EditTaskStatusRequest
 	err := g.ShouldBindJSON(&task)
 	if !utils.IsValidEditTaskStatus(task) || err != nil {
@@ -217,7 +264,7 @@ func EditTaskStatus(g *gin.Context) {
 		return
 	}
 
-	errorCode, errorString, status := tasks.EditTaskStatus(task, database)
+	errorCode, errorString, status := tasks.EditTaskStatus(task, user.Id, database)
 	if status {
 		successResponse = utils.NewSuccessResponse("Successfully edited task status")
 		log.Println(successResponse)
