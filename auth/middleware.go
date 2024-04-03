@@ -3,17 +3,17 @@ package auth
 import (
 	"fmt"
 	"net/http"
+	"os"
 	"strings"
 
-	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
+	jwt "github.com/golang-jwt/jwt/v5"
 	"github.com/saim61/tasks_list_go/utils"
 )
 
-var jwtSecret = []byte("your_jwt_secret")
-
 func AuthMiddleware() gin.HandlerFunc {
 
+	var jwtSecret = []byte(os.Getenv("JWT_SECRET"))
 	return func(g *gin.Context) {
 		// JWT validation logic
 		authHeader := g.GetHeader("Authorization")
@@ -34,12 +34,11 @@ func AuthMiddleware() gin.HandlerFunc {
 			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 				return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 			}
-
 			return jwtSecret, nil
 		})
 
 		if err != nil || !token.Valid {
-			g.JSON(http.StatusUnauthorized, utils.NewErrorResponse("000x76", "Invalid JWT", "JWT not valid anymore"))
+			g.JSON(http.StatusUnauthorized, utils.NewErrorResponse("000x76", err.Error(), "JWT not valid anymore"))
 			g.Abort()
 			return
 		}

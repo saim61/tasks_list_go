@@ -5,11 +5,13 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"time"
 
-	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
+	jwt "github.com/golang-jwt/jwt/v5"
 	"github.com/saim61/tasks_list_go/db"
 	"github.com/saim61/tasks_list_go/user"
+	userPkg "github.com/saim61/tasks_list_go/user"
 	"github.com/saim61/tasks_list_go/utils"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -137,7 +139,7 @@ func LoginUser(g *gin.Context) {
 		return
 	}
 
-	errorCode, errorString, user, status := user.GetUser(userArg.Email, database)
+	errorCode, errorString, user, status := userPkg.GetUser(userArg.Email, database)
 	if !status {
 		errorResponse = utils.NewErrorResponse(errorCode, errorString, "User doesnt exist. Please create a new user.")
 		log.Println(errorResponse)
@@ -152,22 +154,22 @@ func LoginUser(g *gin.Context) {
 		return
 	}
 
-	// Generate JWT
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"user_id":  user.Id,
-		"email":    user.Email,
-		"password": user.Password,
-	})
-
-	jwtSecret := []byte(os.Getenv("JWT_SECRET"))
-	jwtToken, err := token.SignedString(jwtSecret)
-	if err != nil {
-		errorResponse = utils.NewErrorResponse("000x27", "Error while creating JWT token", "Internal server error")
-		log.Println(errorResponse)
-		g.JSON(http.StatusBadRequest, errorResponse)
-		return
+	mySigningKey := []byte(os.Getenv("JWT_SECRET"))
+	type MyCustomClaims struct {
+		jwt.RegisteredClaims
 	}
 
-	g.JSON(http.StatusOK, gin.H{"message": "Successfully login user. Copy your token to access your tasks.", "token": jwtToken})
+	claims := MyCustomClaims{
+		jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(1 * time.Hour)),
+			IssuedAt:  jwt.NewNumericDate(time.Now()),
+			NotBefore: jwt.NewNumericDate(time.Now()),
+		},
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	jwtToken, _ := token.SignedString(mySigningKey)
+
+	g.JSON(http.StatusOK, gin.H{"message": "Successfully login user. Copy your token to access your tasks.", "validity": "1 hour", "token": jwtToken})
 
 }
