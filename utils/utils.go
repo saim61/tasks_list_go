@@ -103,9 +103,9 @@ func GetUserEmailFromJWT(authHeader string) string {
 
 func PrintTask(task tasks.Task) {
 	log.Println("Id: ", task.Id)
-	log.Println("Title: ", task.Id)
-	log.Println("Description: ", task.Id)
-	log.Println("Status: ", task.Id)
+	log.Println("Title: ", task.Title)
+	log.Println("Description: ", task.Description)
+	log.Println("Status: ", task.Status)
 }
 
 func PrintTasks(tasks []tasks.Task) {
