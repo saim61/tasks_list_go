@@ -50,10 +50,15 @@ func RegisterUser(user UserRequest, database *sql.DB) (string, string, bool) {
 	return "", "", true
 }
 
-func EditUser(user UserRequest, database *sql.DB) (string, string, bool) {
-	errorCode, errorString, userDB, status := GetUser(user.Email, database)
+func EditUser(user UserRequest, previousEmail string, database *sql.DB) (string, string, bool) {
+	errorCode, errorString, userDB, status := GetUser(previousEmail, database)
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	if err != nil {
+		return "000x21", err.Error(), false
+	}
+
 	if status {
-		_, err := database.Exec(db.EDIT_USER_QUERY(), userDB.Id, user.Email, user.Password)
+		_, err := database.Exec(db.EDIT_USER_QUERY(), user.Email, hashedPassword, userDB.Id)
 		if err != nil {
 			return "000x23", err.Error(), false
 		}

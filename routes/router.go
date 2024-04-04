@@ -45,6 +45,7 @@ func SetupAPIRoutes() *gin.Engine {
 		v1.POST("/user", auth.AuthMiddleware(), GetUser)
 		v1.POST("/register", RegisterUser)
 		v1.POST("/login", LoginUser)
+		v1.PATCH("/editUser", auth.AuthMiddleware(), EditUser)
 
 		v1.GET("/tasks", auth.AuthMiddleware(), TasksList)
 		v1.GET("/user_tasks", auth.AuthMiddleware(), UserTasksList)

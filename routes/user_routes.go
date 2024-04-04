@@ -24,7 +24,7 @@ var userArg user.UserRequest
 // @Tags User
 // @Param user body user.UserRequest true "Required user parameters"
 // @Param X-CSRF-token header string true "Insert your CSRF token. Access the GET /protected route to get it"
-// @Success 200 {object} utils.SuccessResponse
+// @Success 201 {object} utils.SuccessResponse
 // @Failure 400 {object} utils.ErrorResponse
 // @Router /register [post]
 func RegisterUser(g *gin.Context) {
@@ -45,7 +45,7 @@ func RegisterUser(g *gin.Context) {
 		return
 	}
 
-	_, _, _, status := user.GetUser(strings.ToLower(userArg.Email), database)
+	_, _, _, status := user.GetUser(userArg.Email, database)
 	if status {
 		errorResponse = utils.NewErrorResponse("000x29", "Failed to create user", "User already exists")
 		log.Println(errorResponse)
@@ -173,5 +173,58 @@ func LoginUser(g *gin.Context) {
 	jwtToken, _ := token.SignedString(mySigningKey)
 
 	g.JSON(http.StatusOK, gin.H{"message": "Successfully login user. Copy your token to access your tasks.", "validity": "1 hour", "token": jwtToken})
+}
 
+// EditUser edit a user
+// @Summary Edit a user
+// @Description Edit your details
+// @security bearerToken
+// @scheme bearer
+// @Tags User
+// @Param user body user.UserRequest true "Required user parameters"
+// @Param X-CSRF-token header string true "Insert your CSRF token. Access the GET /protected route to get it"
+// @Success 200 {object} utils.SuccessResponse
+// @Failure 400 {object} utils.ErrorResponse
+// @Router /editUser [patch]
+func EditUser(g *gin.Context) {
+	log.Println("Request to edit user")
+	database := db.GetDatabaseObject()
+	defer database.Close()
+
+	previousEmail := utils.GetUserEmailFromJWT(g.GetHeader("Authorization"))
+
+	if err := g.ShouldBindJSON(&userArg); err != nil {
+		errorResponse = utils.NewErrorResponse("000x27", "Invalid parameters", "Invalid request")
+		log.Println(errorResponse)
+		g.JSON(http.StatusBadRequest, errorResponse)
+		return
+	}
+
+	userArg.Email = strings.ToLower(userArg.Email)
+	if !utils.IsValidEmail(userArg.Email) {
+		errorResponse = utils.NewErrorResponse("000x32", "Failed to login user", "Invalid email format")
+		log.Println(errorResponse)
+		g.JSON(http.StatusBadRequest, errorResponse)
+		return
+	}
+
+	_, _, _, status := user.GetUser(userArg.Email, database)
+	if status {
+		errorResponse = utils.NewErrorResponse("000x33", "Failed to edit user", "Email already taken")
+		log.Println(errorResponse)
+		g.JSON(http.StatusBadRequest, errorResponse)
+		return
+	}
+
+	errorCode, errorString, status := userPkg.EditUser(userArg, previousEmail, database)
+	if !status {
+		errorResponse = utils.NewErrorResponse(errorCode, errorString, "Failed to edit user")
+		log.Println(errorResponse)
+		g.JSON(http.StatusBadRequest, errorResponse)
+		return
+	}
+
+	successResponse = utils.NewSuccessResponse("User details edited successfully")
+	log.Println(successResponse)
+	g.JSON(http.StatusOK, successResponse)
 }

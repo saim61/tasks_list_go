@@ -201,6 +201,52 @@ const docTemplate = `{
                 }
             }
         },
+        "/editUser": {
+            "patch": {
+                "security": [
+                    {
+                        "bearerToken": []
+                    }
+                ],
+                "description": "Edit your details",
+                "tags": [
+                    "User"
+                ],
+                "summary": "Edit a user",
+                "parameters": [
+                    {
+                        "description": "Required user parameters",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/user.UserRequest"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Insert your CSRF token. Access the GET /protected route to get it",
+                        "name": "X-CSRF-token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.SuccessResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/login": {
             "post": {
                 "description": "Login by using your email and password and get your token",
@@ -268,8 +314,8 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "OK",
+                    "201": {
+                        "description": "Created",
                         "schema": {
                             "$ref": "#/definitions/utils.SuccessResponse"
                         }

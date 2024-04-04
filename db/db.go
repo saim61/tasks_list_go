@@ -32,7 +32,7 @@ func GET_USER_QUERY() string {
 	return "SELECT * FROM users WHERE email = ?"
 }
 func EDIT_USER_QUERY() string {
-	return "UPDATE user SET email = ?, password = ?"
+	return "UPDATE users SET email = ?, password = ? WHERE id = ?"
 }
 
 func getDSN() string {

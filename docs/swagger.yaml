@@ -198,6 +198,36 @@ paths:
       summary: Edit a task status
       tags:
       - Tasks
+  /editUser:
+    patch:
+      description: Edit your details
+      parameters:
+      - description: Required user parameters
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/user.UserRequest'
+      - description: Insert your CSRF token. Access the GET /protected route to get
+          it
+        in: header
+        name: X-CSRF-token
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      security:
+      - bearerToken: []
+      summary: Edit a user
+      tags:
+      - User
   /login:
     post:
       description: Login by using your email and password and get your token
@@ -243,8 +273,8 @@ paths:
         required: true
         type: string
       responses:
-        "200":
-          description: OK
+        "201":
+          description: Created
           schema:
             $ref: '#/definitions/utils.SuccessResponse'
         "400":
