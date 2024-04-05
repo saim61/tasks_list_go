@@ -10,19 +10,18 @@ import (
 	"github.com/gin-gonic/gin"
 	jwt "github.com/golang-jwt/jwt/v5"
 	"github.com/saim61/tasks_list_go/db"
-	"github.com/saim61/tasks_list_go/user"
 	userPkg "github.com/saim61/tasks_list_go/user"
 	"github.com/saim61/tasks_list_go/utils"
 	"golang.org/x/crypto/bcrypt"
 )
 
-var userArg user.UserRequest
+var userArg userPkg.UserRequest
 
 // RegisterUser create a new user
 // @Summary Register a new user
 // @Description Register yourself using your email and password
 // @Tags User
-// @Param user body user.UserRequest true "Required user parameters"
+// @Param user body userPkg.UserRequest true "Required user parameters"
 // @Param X-CSRF-token header string true "Insert your CSRF token. Access the GET /protected route to get it"
 // @Success 201 {object} utils.SuccessResponse
 // @Failure 400 {object} utils.ErrorResponse
@@ -45,7 +44,7 @@ func RegisterUser(g *gin.Context) {
 		return
 	}
 
-	_, _, _, status := user.GetUser(userArg.Email, database)
+	_, _, _, status := userPkg.GetUser(userArg.Email, database)
 	if status {
 		errorResponse = utils.NewErrorResponse("000x29", "Failed to create user", "User already exists")
 		log.Println(errorResponse)
@@ -53,7 +52,7 @@ func RegisterUser(g *gin.Context) {
 		return
 	}
 
-	errorCode, errorString, status := user.RegisterUser(userArg, database)
+	errorCode, errorString, status := userPkg.RegisterUser(userArg, database)
 	if !status {
 		errorResponse = utils.NewErrorResponse(errorCode, errorString, "Error while registering user")
 		log.Println(errorResponse)
@@ -72,9 +71,9 @@ func RegisterUser(g *gin.Context) {
 // @security bearerToken
 // @scheme bearer
 // @Tags User
-// @Param user body user.UserRequest true "Required user parameters"
+// @Param user body userPkg.UserRequest true "Required user parameters"
 // @Param X-CSRF-token header string true "Insert your CSRF token. Access the GET /protected route to get it"
-// @Success 200 {object} user.User
+// @Success 200 {object} userPkg.User
 // @Failure 400 {object} utils.ErrorResponse
 // @Router /user [post]
 func GetUser(g *gin.Context) {
@@ -97,7 +96,7 @@ func GetUser(g *gin.Context) {
 		return
 	}
 
-	errorCode, errorString, user, status := user.GetUser(userArg.Email, database)
+	errorCode, errorString, user, status := userPkg.GetUser(userArg.Email, database)
 	if !status {
 		errorResponse = utils.NewErrorResponse(errorCode, errorString, "User doesnt exist. Please create a new user.")
 		log.Println(errorResponse)
@@ -114,7 +113,7 @@ func GetUser(g *gin.Context) {
 // @Summary Login user
 // @Description Login by using your email and password and get your token
 // @Tags User
-// @Param user body user.UserRequest true "Required user parameters"
+// @Param user body userPkg.UserRequest true "Required user parameters"
 // @Param X-CSRF-token header string true "Insert your CSRF token. Access the GET /protected route to get it"
 // @Success 200 {object} utils.LoginSuccessResponse
 // @Failure 400 {object} utils.ErrorResponse
@@ -181,7 +180,7 @@ func LoginUser(g *gin.Context) {
 // @security bearerToken
 // @scheme bearer
 // @Tags User
-// @Param user body user.UserRequest true "Required user parameters"
+// @Param user body userPkg.UserRequest true "Required user parameters"
 // @Param X-CSRF-token header string true "Insert your CSRF token. Access the GET /protected route to get it"
 // @Success 200 {object} utils.SuccessResponse
 // @Failure 400 {object} utils.ErrorResponse
@@ -208,7 +207,7 @@ func EditUser(g *gin.Context) {
 		return
 	}
 
-	_, _, _, status := user.GetUser(userArg.Email, database)
+	_, _, _, status := userPkg.GetUser(userArg.Email, database)
 	if status {
 		errorResponse = utils.NewErrorResponse("000x33", "Failed to edit user", "Email already taken")
 		log.Println(errorResponse)

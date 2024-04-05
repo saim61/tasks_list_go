@@ -9,7 +9,11 @@ import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
-	"github.com/juju/ratelimit"
+
+	"github.com/didip/tollbooth"
+	limiter "github.com/didip/tollbooth/limiter"
+	"github.com/didip/tollbooth_gin"
+
 	"github.com/saim61/tasks_list_go/middleware"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -51,10 +55,14 @@ func SetupAPIRoutes() *gin.Engine {
 	// Setting up the rate limiter for all the requests
 	// For now, its set to 100 requests/second
 	// The number of requests can be changed from the .env file and time can be changed from here
-	allowedRequests, _ := strconv.ParseInt(rps, 10, 64)
-	limiter := ratelimit.NewBucket(time.Second, allowedRequests)
+	allowedRequests, _ := strconv.ParseFloat(rps, 64)
 
-	router.Use(middleware.RateLimit(limiter))
+	tbOptions := &limiter.ExpirableOptions{DefaultExpirationTTL: time.Hour}
+	limiterNew := tollbooth.NewLimiter(allowedRequests, tbOptions)
+	limiterNew.SetIPLookups([]string{"RemoteAddr", "X-Forwarded-For", "X-Real-IP"}).
+		SetMethods([]string{"GET", "POST", "PATCH", "DELETE"})
+
+	router.Use(tollbooth_gin.LimitHandler(limiterNew))
 	v1 := router.Group("/api/v1")
 	{
 		v1.POST("/user", middleware.AuthMiddleware(), GetUser)
