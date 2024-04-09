@@ -34,8 +34,10 @@ A basic implementation of Tasks list. You can create your own user (or choose on
 ## How to start the project?
 - Setup the DB first
     - Navigate to /db/migrations folder
-    - use the following line to create your dev and test DB
-    - ```migrate -database "mysql://[dbUser]:[dbPassword]@tcp([dbHost]:[dbPort])/[dbName]" -path . up```
+    - use the following line to create your dev and test DB 
+    ```
+    migrate -database "mysql://[dbUser]:[dbPassword]@tcp([dbHost]:[dbPort])/[dbName]" -path . up
+    ```
     - Doing so would make 2 DB's for you. tasks_list_go (dev DB) and test_tasks_list_go (test DB)
     - You would have a dummy email already their for you along with some tasks created already
     - email and password: admin@admin.com
