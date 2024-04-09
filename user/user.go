@@ -2,8 +2,10 @@ package user
 
 import (
 	"database/sql"
+	"strings"
 
 	"github.com/saim61/tasks_list_go/db"
+	"github.com/saim61/tasks_list_go/utils"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -31,15 +33,20 @@ func GetUser(emailArg string, database *sql.DB) (string, string, User, bool) {
 	}
 }
 
-func RegisterUser(user UserRequest, database *sql.DB) (string, string, bool) {
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+func RegisterUser(userArg UserRequest, database *sql.DB) (string, string, bool) {
+	userArg.Email = strings.ToLower(userArg.Email)
+	if !utils.IsValidEmail(userArg.Email) {
+		return "000x28", "Failed to create user", false
+	}
+
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(userArg.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return "000x21", err.Error(), false
 	}
 
 	_, err = database.Exec(
 		db.INSERT_USER_QUERY(),
-		user.Email,
+		userArg.Email,
 		hashedPassword,
 	)
 
@@ -50,15 +57,21 @@ func RegisterUser(user UserRequest, database *sql.DB) (string, string, bool) {
 	return "", "", true
 }
 
-func EditUser(user UserRequest, previousEmail string, database *sql.DB) (string, string, bool) {
+func EditUser(userArg UserRequest, previousEmail string, database *sql.DB) (string, string, bool) {
 	errorCode, errorString, userDB, status := GetUser(previousEmail, database)
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+
+	userArg.Email = strings.ToLower(userArg.Email)
+	if !utils.IsValidEmail(userArg.Email) {
+		return "000x29", "Failed to create user", false
+	}
+
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(userArg.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return "000x21", err.Error(), false
 	}
 
 	if status {
-		_, err := database.Exec(db.EDIT_USER_QUERY(), user.Email, hashedPassword, userDB.Id)
+		_, err := database.Exec(db.EDIT_USER_QUERY(), userArg.Email, hashedPassword, userDB.Id)
 		if err != nil {
 			return "000x23", err.Error(), false
 		}

@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/saim61/tasks_list_go/db"
 	"github.com/saim61/tasks_list_go/tasks"
@@ -15,6 +16,7 @@ import (
 
 var errorResponse utils.ErrorResponse
 var successResponse utils.SuccessResponse
+var mode string
 
 // TasksList godoc
 // @Summary Get tasks list of all users
@@ -27,9 +29,16 @@ var successResponse utils.SuccessResponse
 // @failure 403 {object} utils.ErrorResponse
 // @Router /tasks [get]
 func TasksList(g *gin.Context) {
+	path := g.Request.URL.Path
+	if strings.Contains(path, "/test/") {
+		mode = "test"
+	} else {
+		mode = "dev"
+	}
+
 	tasksRequestCounter.Inc()
 	log.Println("Request to get Tasks List")
-	database := db.GetDatabaseObject()
+	database := db.GetDatabaseObject(mode)
 	defer database.Close()
 
 	errorCode, errorString, tasks := tasks.GetAllTasks(database)
@@ -56,9 +65,16 @@ func TasksList(g *gin.Context) {
 // @failure 403 {object} utils.ErrorResponse
 // @Router /user_tasks [get]
 func UserTasksList(g *gin.Context) {
+	path := g.Request.URL.Path
+	if strings.Contains(path, "/test/") {
+		mode = "test"
+	} else {
+		mode = "dev"
+	}
+
 	userTasksRequestCounter.Inc()
 	log.Println("Request to get Tasks List of current user")
-	database := db.GetDatabaseObject()
+	database := db.GetDatabaseObject(mode)
 	defer database.Close()
 
 	userEmail := utils.GetUserEmailFromJWT(g.GetHeader("Authorization"))
@@ -89,9 +105,16 @@ func UserTasksList(g *gin.Context) {
 // @Failure 400 {object} utils.ErrorResponse
 // @Router /task/:id [get]
 func GetTask(g *gin.Context) {
+	path := g.Request.URL.Path
+	if strings.Contains(path, "/test/") {
+		mode = "test"
+	} else {
+		mode = "dev"
+	}
+
 	taskRequestCounter.Inc()
 	log.Println("Request to get Task by ID")
-	database := db.GetDatabaseObject()
+	database := db.GetDatabaseObject(mode)
 	defer database.Close()
 
 	userEmail := utils.GetUserEmailFromJWT(g.GetHeader("Authorization"))
@@ -130,9 +153,16 @@ func GetTask(g *gin.Context) {
 // @Failure 400 {object} utils.ErrorResponse
 // @Router /deleteTask/:id [delete]
 func DeleteTask(g *gin.Context) {
+	path := g.Request.URL.Path
+	if strings.Contains(path, "/test/") {
+		mode = "test"
+	} else {
+		mode = "dev"
+	}
+
 	deleteTasksRequestCounter.Inc()
 	log.Println("Request to delete task")
-	database := db.GetDatabaseObject()
+	database := db.GetDatabaseObject(mode)
 	defer database.Close()
 
 	userEmail := utils.GetUserEmailFromJWT(g.GetHeader("Authorization"))
@@ -171,9 +201,16 @@ func DeleteTask(g *gin.Context) {
 // @Failure 400 {object} utils.ErrorResponse
 // @Router /createTask [post]
 func CreateTask(g *gin.Context) {
+	path := g.Request.URL.Path
+	if strings.Contains(path, "/test/") {
+		mode = "test"
+	} else {
+		mode = "dev"
+	}
+
 	createTasksRequestCounter.Inc()
 	log.Println("Request to create task")
-	database := db.GetDatabaseObject()
+	database := db.GetDatabaseObject(mode)
 	defer database.Close()
 
 	userEmail := utils.GetUserEmailFromJWT(g.GetHeader("Authorization"))
@@ -213,9 +250,16 @@ func CreateTask(g *gin.Context) {
 // @Failure 400 {object} utils.ErrorResponse
 // @Router /editTask [patch]
 func EditTask(g *gin.Context) {
+	path := g.Request.URL.Path
+	if strings.Contains(path, "/test/") {
+		mode = "test"
+	} else {
+		mode = "dev"
+	}
+
 	editTaskRequestCounter.Inc()
 	log.Println("Request to edit task")
-	database := db.GetDatabaseObject()
+	database := db.GetDatabaseObject(mode)
 	defer database.Close()
 
 	userEmail := utils.GetUserEmailFromJWT(g.GetHeader("Authorization"))
@@ -254,9 +298,16 @@ func EditTask(g *gin.Context) {
 // @Failure 400 {object} utils.ErrorResponse
 // @Router /editTaskStatus [patch]
 func EditTaskStatus(g *gin.Context) {
+	path := g.Request.URL.Path
+	if strings.Contains(path, "/test/") {
+		mode = "test"
+	} else {
+		mode = "dev"
+	}
+
 	editTaskStatusRequestCounter.Inc()
 	log.Println("Request to edit a task's status")
-	database := db.GetDatabaseObject()
+	database := db.GetDatabaseObject(mode)
 	defer database.Close()
 
 	userEmail := utils.GetUserEmailFromJWT(g.GetHeader("Authorization"))

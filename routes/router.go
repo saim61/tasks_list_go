@@ -27,6 +27,12 @@ func init() {
 
 func SetupRouter() *gin.Engine {
 	router := gin.Default()
+	return router
+}
+
+func SetupAPIRoutes() *gin.Engine {
+	router := SetupRouter()
+
 	router.Use(cors.Default())
 
 	store := cookie.NewStore([]byte(os.Getenv("COOKIE_STORE")))
@@ -38,24 +44,6 @@ func SetupRouter() *gin.Engine {
 			c.Abort()
 		},
 	}))
-
-	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-
-	router.GET("/protected", func(g *gin.Context) {
-		g.String(200, csrf.GetToken(g))
-	})
-
-	router.POST("/protected", func(g *gin.Context) {
-		g.String(200, "CSRF token is valid")
-	})
-
-	router.GET("/metrics", gin.WrapH(promhttp.Handler()))
-
-	return router
-}
-
-func SetupAPIRoutes() *gin.Engine {
-	router := SetupRouter()
 
 	rps := os.Getenv("RATE_LIMIT")
 
@@ -87,21 +75,18 @@ func SetupAPIRoutes() *gin.Engine {
 
 		v1.DELETE("/deleteTask/:id", middleware.AuthMiddleware(), DeleteTask)
 	}
-	return router
-}
 
-func SetupTestingRoutes() *gin.Engine {
-	router := SetupRouter()
-	testingRoutes := router.Group("/test")
-	{
-		testingRoutes.GET("/tasks", TasksList)
-		testingRoutes.GET("/task/:id", GetTask)
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-		testingRoutes.POST("/createTask", CreateTask)
-		testingRoutes.POST("/editTask", EditTask)
-		testingRoutes.POST("/editTaskStatus", EditTaskStatus)
+	router.GET("/protected", func(g *gin.Context) {
+		g.String(200, csrf.GetToken(g))
+	})
 
-		testingRoutes.DELETE("/deleteTask/:id", DeleteTask)
-	}
+	router.POST("/protected", func(g *gin.Context) {
+		g.String(200, "CSRF token is valid")
+	})
+
+	router.GET("/metrics", gin.WrapH(promhttp.Handler()))
+
 	return router
 }

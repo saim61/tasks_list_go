@@ -27,9 +27,15 @@ var userArg userPkg.UserRequest
 // @Failure 400 {object} utils.ErrorResponse
 // @Router /register [post]
 func RegisterUser(g *gin.Context) {
+	if strings.Contains(g.Request.URL.Path, "/test/") {
+		mode = "test"
+	} else {
+		mode = "dev"
+	}
+
 	registerUserRequestCounter.Inc()
 	log.Println("Request to register user")
-	database := db.GetDatabaseObject()
+	database := db.GetDatabaseObject(mode)
 	defer database.Close()
 
 	if err := g.ShouldBindJSON(&userArg); err != nil {
@@ -38,13 +44,6 @@ func RegisterUser(g *gin.Context) {
 	}
 
 	userArg.Email = strings.ToLower(userArg.Email)
-	if !utils.IsValidEmail(userArg.Email) {
-		errorResponse = utils.NewErrorResponse("000x28", "Failed to create user", "Invalid email format")
-		log.Println(errorResponse)
-		g.JSON(http.StatusBadRequest, errorResponse)
-		return
-	}
-
 	_, _, _, status := userPkg.GetUser(userArg.Email, database)
 	if status {
 		errorResponse = utils.NewErrorResponse("000x29", "Failed to create user", "User already exists")
@@ -78,9 +77,15 @@ func RegisterUser(g *gin.Context) {
 // @Failure 400 {object} utils.ErrorResponse
 // @Router /user [post]
 func GetUser(g *gin.Context) {
+	if strings.Contains(g.Request.URL.Path, "/test/") {
+		mode = "test"
+	} else {
+		mode = "dev"
+	}
+
 	getUserRequestCounter.Inc()
 	log.Println("Request to get user")
-	database := db.GetDatabaseObject()
+	database := db.GetDatabaseObject(mode)
 	defer database.Close()
 
 	if err := g.ShouldBindJSON(&userArg); err != nil {
@@ -121,9 +126,15 @@ func GetUser(g *gin.Context) {
 // @Failure 400 {object} utils.ErrorResponse
 // @Router /login [post]
 func LoginUser(g *gin.Context) {
+	if strings.Contains(g.Request.URL.Path, "/test/") {
+		mode = "test"
+	} else {
+		mode = "dev"
+	}
+
 	loginRequestCounter.Inc()
 	log.Println("Request to login user")
-	database := db.GetDatabaseObject()
+	database := db.GetDatabaseObject(mode)
 	defer database.Close()
 
 	if err := g.ShouldBindJSON(&userArg); err != nil {
@@ -189,9 +200,15 @@ func LoginUser(g *gin.Context) {
 // @Failure 400 {object} utils.ErrorResponse
 // @Router /editUser [patch]
 func EditUser(g *gin.Context) {
+	if strings.Contains(g.Request.URL.Path, "/test/") {
+		mode = "test"
+	} else {
+		mode = "dev"
+	}
+
 	editUserRequestCounter.Inc()
 	log.Println("Request to edit user")
-	database := db.GetDatabaseObject()
+	database := db.GetDatabaseObject(mode)
 	defer database.Close()
 
 	previousEmail := utils.GetUserEmailFromJWT(g.GetHeader("Authorization"))

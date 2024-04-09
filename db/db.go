@@ -3,13 +3,9 @@ package db
 import (
 	"database/sql"
 	"os"
-)
 
-const DB_HOST = "localhost"
-const DB_PORT = "3306"
-const DB_PASSWORD = "saeem"
-const DB_USER = "root"
-const DB_NAME = "tasks_list_go"
+	_ "github.com/go-sql-driver/mysql"
+)
 
 func INSERT_TASK_QUERY() string {
 	return "INSERT into tasks (title, description, status, user_id) VALUES (?, ?, ?, ?)"
@@ -35,18 +31,27 @@ func EDIT_USER_QUERY() string {
 	return "UPDATE users SET email = ?, password = ? WHERE id = ?"
 }
 
-func getDSN() string {
-	dbUser := os.Getenv("DB_USER")
-	dbPassword := os.Getenv("DB_PASSWORD")
-	dbHost := os.Getenv("DB_HOST")
-	dbPort := os.Getenv("DB_PORT")
-	dbName := os.Getenv("DB_NAME")
+func getDSN(mode string) string {
+	var dbUser, dbPassword, dbHost, dbPort, dbName string
+	if mode == "dev" {
+		dbUser = os.Getenv("DB_USER")
+		dbPassword = os.Getenv("DB_PASSWORD")
+		dbHost = os.Getenv("DB_HOST")
+		dbPort = os.Getenv("DB_PORT")
+		dbName = os.Getenv("DB_NAME")
+	} else {
+		dbUser = "root"
+		dbPassword = "saeem"
+		dbHost = "localhost"
+		dbPort = "3306"
+		dbName = "test_tasks_list_go"
+	}
 
 	return dbUser + ":" + dbPassword + "@tcp(" + dbHost + ":" + dbPort + ")/" + dbName
 }
 
-func GetDatabaseObject() *sql.DB {
-	database, err := sql.Open("mysql", getDSN())
+func GetDatabaseObject(mode string) *sql.DB {
+	database, err := sql.Open("mysql", getDSN(mode))
 	if err != nil {
 		panic(err.Error())
 	}

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
 
@@ -35,7 +34,6 @@ func main() {
 		port = ":" + port
 	}
 
-	fmt.Println("the port ---> ", port)
 	err := godotenv.Load(".env")
 	if err != nil {
 		log.Fatalf("Error loading .env file: %s", err)
