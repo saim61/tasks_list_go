@@ -1,7 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"log"
+	"os"
 
 	"github.com/joho/godotenv"
 	"github.com/saim61/tasks_list_go/routes"
@@ -26,6 +28,14 @@ import (
 // @BasePath /api/v1
 func main() {
 
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = ":8080"
+	} else {
+		port = ":" + port
+	}
+
+	fmt.Println("the port ---> ", port)
 	err := godotenv.Load(".env")
 	if err != nil {
 		log.Fatalf("Error loading .env file: %s", err)
@@ -33,5 +43,5 @@ func main() {
 
 	router := routes.SetupAPIRoutes()
 
-	log.Fatal(router.Run(":8080"))
+	log.Fatal(router.Run(port))
 }

@@ -1,0 +1,9 @@
+CREATE TABLE test_tasks_list_go.users (
+  id INT NOT NULL AUTO_INCREMENT,
+  email VARCHAR(100) NOT NULL,
+  password VARCHAR(100) NOT NULL,
+  PRIMARY KEY (id),
+  UNIQUE INDEX id_UNIQUE (id ASC) VISIBLE,
+  UNIQUE INDEX email_UNIQUE (email ASC) VISIBLE,
+  UNIQUE INDEX password_UNIQUE (password ASC) VISIBLE
+);

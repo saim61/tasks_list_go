@@ -1,0 +1,1 @@
+DROP TABLE tasks_list_go.tasks;
