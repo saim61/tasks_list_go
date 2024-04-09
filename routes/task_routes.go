@@ -27,6 +27,7 @@ var successResponse utils.SuccessResponse
 // @failure 403 {object} utils.ErrorResponse
 // @Router /tasks [get]
 func TasksList(g *gin.Context) {
+	tasksRequestCounter.Inc()
 	log.Println("Request to get Tasks List")
 	database := db.GetDatabaseObject()
 	defer database.Close()
@@ -55,6 +56,7 @@ func TasksList(g *gin.Context) {
 // @failure 403 {object} utils.ErrorResponse
 // @Router /user_tasks [get]
 func UserTasksList(g *gin.Context) {
+	userTasksRequestCounter.Inc()
 	log.Println("Request to get Tasks List of current user")
 	database := db.GetDatabaseObject()
 	defer database.Close()
@@ -87,6 +89,7 @@ func UserTasksList(g *gin.Context) {
 // @Failure 400 {object} utils.ErrorResponse
 // @Router /task/:id [get]
 func GetTask(g *gin.Context) {
+	taskRequestCounter.Inc()
 	log.Println("Request to get Task by ID")
 	database := db.GetDatabaseObject()
 	defer database.Close()
@@ -127,6 +130,7 @@ func GetTask(g *gin.Context) {
 // @Failure 400 {object} utils.ErrorResponse
 // @Router /deleteTask/:id [delete]
 func DeleteTask(g *gin.Context) {
+	deleteTasksRequestCounter.Inc()
 	log.Println("Request to delete task")
 	database := db.GetDatabaseObject()
 	defer database.Close()
@@ -167,6 +171,7 @@ func DeleteTask(g *gin.Context) {
 // @Failure 400 {object} utils.ErrorResponse
 // @Router /createTask [post]
 func CreateTask(g *gin.Context) {
+	createTasksRequestCounter.Inc()
 	log.Println("Request to create task")
 	database := db.GetDatabaseObject()
 	defer database.Close()
@@ -208,6 +213,7 @@ func CreateTask(g *gin.Context) {
 // @Failure 400 {object} utils.ErrorResponse
 // @Router /editTask [patch]
 func EditTask(g *gin.Context) {
+	editTaskRequestCounter.Inc()
 	log.Println("Request to edit task")
 	database := db.GetDatabaseObject()
 	defer database.Close()
@@ -248,6 +254,7 @@ func EditTask(g *gin.Context) {
 // @Failure 400 {object} utils.ErrorResponse
 // @Router /editTaskStatus [patch]
 func EditTaskStatus(g *gin.Context) {
+	editTaskStatusRequestCounter.Inc()
 	log.Println("Request to edit a task's status")
 	database := db.GetDatabaseObject()
 	defer database.Close()

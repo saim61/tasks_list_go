@@ -9,6 +9,7 @@ import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 
 	"github.com/didip/tollbooth"
 	limiter "github.com/didip/tollbooth/limiter"
@@ -19,6 +20,10 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 	csrf "github.com/utrack/gin-csrf"
 )
+
+func init() {
+	setupPrometheusCounters()
+}
 
 func SetupRouter() *gin.Engine {
 	router := gin.Default()
@@ -43,6 +48,8 @@ func SetupRouter() *gin.Engine {
 	router.POST("/protected", func(g *gin.Context) {
 		g.String(200, "CSRF token is valid")
 	})
+
+	router.GET("/metrics", gin.WrapH(promhttp.Handler()))
 
 	return router
 }

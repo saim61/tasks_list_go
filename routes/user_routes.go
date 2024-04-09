@@ -27,6 +27,7 @@ var userArg userPkg.UserRequest
 // @Failure 400 {object} utils.ErrorResponse
 // @Router /register [post]
 func RegisterUser(g *gin.Context) {
+	registerUserRequestCounter.Inc()
 	log.Println("Request to register user")
 	database := db.GetDatabaseObject()
 	defer database.Close()
@@ -77,6 +78,7 @@ func RegisterUser(g *gin.Context) {
 // @Failure 400 {object} utils.ErrorResponse
 // @Router /user [post]
 func GetUser(g *gin.Context) {
+	getUserRequestCounter.Inc()
 	log.Println("Request to get user")
 	database := db.GetDatabaseObject()
 	defer database.Close()
@@ -119,6 +121,7 @@ func GetUser(g *gin.Context) {
 // @Failure 400 {object} utils.ErrorResponse
 // @Router /login [post]
 func LoginUser(g *gin.Context) {
+	loginRequestCounter.Inc()
 	log.Println("Request to login user")
 	database := db.GetDatabaseObject()
 	defer database.Close()
@@ -186,6 +189,7 @@ func LoginUser(g *gin.Context) {
 // @Failure 400 {object} utils.ErrorResponse
 // @Router /editUser [patch]
 func EditUser(g *gin.Context) {
+	editUserRequestCounter.Inc()
 	log.Println("Request to edit user")
 	database := db.GetDatabaseObject()
 	defer database.Close()
