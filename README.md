@@ -22,6 +22,7 @@ A basic implementation of Tasks list. You can create your own user (or choose on
 - Then you need to install Prometheus and Grafana. You can skip this part if you are not interested in metrics.
 - MySQL is used as the database for this project. Download and install it for your system accordingly. 
 - golang-migrate is used for migration so install that as well
+- also, create 2 databases in your system with the names: `tasks_list_go` and `test_tasks_list_go`
 
 ## How to download Promethus and Grafana?
 - You can follow the instructions on their website and download it.
