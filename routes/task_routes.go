@@ -244,7 +244,7 @@ func CreateTask(g *gin.Context) {
 // @security bearerToken
 // @scheme bearer
 // @Tags Tasks
-// @Param task body tasks.Task true "Required edit task parameters"
+// @Param task body tasks.EditTaskRequest true "Required edit task parameters"
 // @Param X-CSRF-token header string true "Insert your CSRF token. Access the GET /protected route to get it"
 // @Success 200 {object} utils.SuccessResponse
 // @Failure 400 {object} utils.ErrorResponse

@@ -20,6 +20,13 @@ type CreateTaskRequest struct {
 	Status      string `json:"status"`
 }
 
+type EditTaskRequest struct {
+	Id          int    `json:"id"`
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	Status      string `json:"status"`
+}
+
 type EditTaskStatusRequest struct {
 	Id     int    `json:"id"`
 	Status string `json:"status"`

@@ -9,6 +9,17 @@ definitions:
       title:
         type: string
     type: object
+  tasks.EditTaskRequest:
+    properties:
+      description:
+        type: string
+      id:
+        type: integer
+      status:
+        type: string
+      title:
+        type: string
+    type: object
   tasks.EditTaskStatusRequest:
     properties:
       id:
@@ -147,7 +158,7 @@ paths:
         name: task
         required: true
         schema:
-          $ref: '#/definitions/tasks.Task'
+          $ref: '#/definitions/tasks.EditTaskRequest'
       - description: Insert your CSRF token. Access the GET /protected route to get
           it
         in: header

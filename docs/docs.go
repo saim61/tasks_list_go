@@ -128,7 +128,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/tasks.Task"
+                            "$ref": "#/definitions/tasks.EditTaskRequest"
                         }
                     },
                     {
@@ -506,6 +506,23 @@ const docTemplate = `{
             "properties": {
                 "description": {
                     "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "tasks.EditTaskRequest": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
                 },
                 "status": {
                     "type": "string"
